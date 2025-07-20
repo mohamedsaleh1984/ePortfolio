@@ -1,1 +1,0 @@
-mongodb+srv://activeqt:<db_password>@cluster0.yhzhnkc.mongodb.net/
