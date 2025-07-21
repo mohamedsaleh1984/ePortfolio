@@ -37,13 +37,15 @@ implements
     private static final int SMS_PERMISSION_REQUEST_CODE = 100;
     private ArrayList<InventoryItem> itemsList;
     private  InventoryDatabase inventoryDatabase;
+    private  SearchView searchView;
+    private ItemsAdapter itemsAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_inventory);
 
-        SearchView searchView = findViewById(R.id.searchView);
+        searchView = findViewById(R.id.searchView);
         searchView.clearFocus();
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -72,7 +74,7 @@ implements
         Log.w("TEST","COUNT IS " +itemsList.size());
 
 
-        ItemsAdapter itemsAdapter = new ItemsAdapter(this, itemsList, this, this);
+        itemsAdapter = new ItemsAdapter(this, itemsList, this, this);
         RecyclerView recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -100,7 +102,7 @@ implements
     }
 
     private void filterList(String text){
-        List<InventoryItem>  filteredList = new ArrayList<>();
+        ArrayList<InventoryItem>  filteredList = new ArrayList<>();
         for(InventoryItem item:itemsList){
             if(item.getName().toLowerCase().contains(text.toLowerCase())){
                 filteredList.add(item);
@@ -109,7 +111,7 @@ implements
         if(filteredList.isEmpty()){
             Toast.makeText(this,"No data found",Toast.LENGTH_LONG).show();
         }else{
-
+            itemsAdapter.setFilteredList(filteredList);
         }
     }
 

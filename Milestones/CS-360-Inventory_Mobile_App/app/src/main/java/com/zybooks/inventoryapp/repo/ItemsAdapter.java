@@ -21,7 +21,7 @@ import java.util.ArrayList;
 public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.InventoryViewHolder> {
 
     private final Context context;
-    private final ArrayList<InventoryItem> inventoryItems;
+    private   ArrayList<InventoryItem> inventoryItems;
     private final OnDeleteItemButtonClickListener deleteButtonClickListener;
     private final OnItemClickListener itemClickListener;
 
@@ -86,6 +86,9 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.InventoryVie
         return inventoryItems.size();
     }
 
+    public void setFilteredList(ArrayList<InventoryItem> items){
+        this.inventoryItems = items;
+    }
     public static class InventoryViewHolder extends RecyclerView.ViewHolder {
         TextView nameTextView, quantityTextView, priceTextView, tvItemID;
         ImageView imgView;
