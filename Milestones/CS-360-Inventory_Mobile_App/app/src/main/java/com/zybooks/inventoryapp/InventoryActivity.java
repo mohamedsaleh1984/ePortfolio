@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.SearchView;
 import android.widget.Toast;
@@ -20,32 +21,29 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.zybooks.inventoryapp.helper.Helper;
 import com.zybooks.inventoryapp.model.InventoryItem;
-import com.zybooks.inventoryapp.repo.InventoryAdapter;
+
 import com.zybooks.inventoryapp.repo.InventoryDatabase;
+import com.zybooks.inventoryapp.repo.ItemsAdapter;
+import com.zybooks.inventoryapp.repo.MockInventoryData;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class InventoryActivity extends AppCompatActivity
 implements
-InventoryAdapter.OnDeleteItemButtonClickListener,
-InventoryAdapter.OnItemClickListener
+        ItemsAdapter.OnDeleteItemButtonClickListener,
+        ItemsAdapter.OnItemClickListener
 {
     private static final int SMS_PERMISSION_REQUEST_CODE = 100;
-    private RecyclerView recyclerView;
-    private InventoryAdapter inventoryAdapter;
-    private FloatingActionButton btnSendSms;
-    private FloatingActionButton btnAddItem;
-    private List<InventoryItem> itemsList;
+    private ArrayList<InventoryItem> itemsList;
     private  InventoryDatabase inventoryDatabase;
-    private SearchView searchView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_inventory);
 
-        searchView = findViewById(R.id.searchView);
+        SearchView searchView = findViewById(R.id.searchView);
         searchView.clearFocus();
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -59,27 +57,29 @@ InventoryAdapter.OnItemClickListener
                 return true;
             }
         });
-        recyclerView = findViewById(R.id.recyclerView);
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
 
         refreshData();
     }
 
     void refreshData(){
         inventoryDatabase = new InventoryDatabase(this);
-        // Get mock data
-        itemsList = inventoryDatabase.getAllItems();
-        // MockInventoryData.generateInventoryItems();
 
-        // Set up GridView with adapter
-/*
-        inventoryAdapter = new InventoryAdapter( this,inventoryItems,this,this);
-        recyclerView.setAdapter(inventoryAdapter);
-*/
+        itemsList = inventoryDatabase.getAllItems();
+        // Get mock data
+        //itemsList = MockInventoryData.generateInventoryItems();
+
+        Log.w("TEST","COUNT IS " +itemsList.size());
+
+
+        ItemsAdapter itemsAdapter = new ItemsAdapter(this, itemsList, this, this);
+        RecyclerView recyclerView = findViewById(R.id.recyclerView);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(itemsAdapter);
 
         // Add New Item
-        btnAddItem = findViewById(R.id.addButton);
+        FloatingActionButton btnAddItem = findViewById(R.id.addButton);
         btnAddItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -90,7 +90,7 @@ InventoryAdapter.OnItemClickListener
         });
 
         // Send SMS
-        btnSendSms = findViewById(R.id.btnSendSms);
+        FloatingActionButton btnSendSms = findViewById(R.id.btnSendSms);
         btnSendSms.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -109,7 +109,7 @@ InventoryAdapter.OnItemClickListener
         if(filteredList.isEmpty()){
             Toast.makeText(this,"No data found",Toast.LENGTH_LONG).show();
         }else{
-            
+
         }
     }
 

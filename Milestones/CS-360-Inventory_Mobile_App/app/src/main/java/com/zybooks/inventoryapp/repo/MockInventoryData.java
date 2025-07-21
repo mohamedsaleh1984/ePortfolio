@@ -9,8 +9,8 @@ public class MockInventoryData {
     /**
      * Generate Random Items
      */
-    public static List<InventoryItem> generateInventoryItems() {
-        List<InventoryItem> items = new ArrayList<>();
+    public static ArrayList<InventoryItem> generateInventoryItems() {
+        ArrayList<InventoryItem> items = new ArrayList<>();
         int mockRandom = (int)(Math.random() * 20)+5;
         int idCounter = 1;
 
