@@ -1,3 +1,4 @@
+#### Import CSV file to Database
 1.  Install MySQL Workbench
 2. Create New Schema pet_shelter
 3. Right Click on `pet_shelter` and select Table Data Import Wizard from Navigator tab
@@ -8,5 +9,10 @@
 ![alt text](./docs/import.png)
 
 
+#### Run Jupyter
+
+https://jupyter.org/install
+
+`pip install jupyterlab`
 ##### Database location
 `C:\ProgramData\MySQL\MySQL Server 8.0\Data`

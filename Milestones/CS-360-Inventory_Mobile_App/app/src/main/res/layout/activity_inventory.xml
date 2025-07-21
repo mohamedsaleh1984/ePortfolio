@@ -5,35 +5,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
+    <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/inventory_wizard"
-            android:textSize="24sp"
-            android:textAlignment="center"
-            android:padding="16dp"
-            android:layout_marginTop="32dp"
-            android:background="@color/purple_500"
-            android:textColor="@color/white" />
-
-
-        <GridView
-            android:id="@+id/gridView"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:numColumns="2"
-            android:verticalSpacing="8dp"
-            android:horizontalSpacing="8dp"
-            android:stretchMode="columnWidth"
-            android:padding="8dp" />
-
-    </LinearLayout>
+        android:id="@+id/recyclerView"
+        android:layout_height="match_parent" />
 
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -42,7 +17,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="16dp"
-        android:contentDescription="Add"
+        android:contentDescription="@string/add"
         android:src="@drawable/add"
         app:backgroundTint="@color/purple_500"
         app:tint="@android:color/white" />
@@ -53,7 +28,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|start"
         android:layout_margin="16dp"
-        android:contentDescription="Send SMS"
+        android:contentDescription="@string/send_sms"
         android:src="@drawable/sms"
         app:backgroundTint="@color/purple_500"
         app:tint="@android:color/white" />

@@ -19,6 +19,8 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.zybooks.inventoryapp.helper.Helper;
@@ -35,15 +37,54 @@ InventoryAdapter.OnDeleteItemButtonClickListener,
 InventoryAdapter.OnItemClickListener
 {
     private static final int SMS_PERMISSION_REQUEST_CODE = 100;
-    private GridView gridView;
+    private RecyclerView recyclerView;
+    private InventoryAdapter inventoryAdapter;
     private FloatingActionButton btnSendSms,btnAddItem;
-    private ArrayList<InventoryItem> inventoryItems;
+    private List<InventoryItem> inventoryItems;
     private  InventoryDatabase inventoryDatabase;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_inventory);
+
+        recyclerView = findViewById(R.id.recyclerView);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
         refreshData();
+    }
+
+    void refreshData(){
+        inventoryDatabase = new InventoryDatabase(this);
+        // Get mock data
+        inventoryItems = inventoryDatabase.getAllItems();
+        // MockInventoryData.generateInventoryItems();
+
+        // Set up GridView with adapter
+
+        inventoryAdapter = new InventoryAdapter( this,inventoryItems,this,this);
+        recyclerView.setAdapter(inventoryAdapter);
+
+
+        // Add New Item
+        btnAddItem = findViewById(R.id.addButton);
+        btnAddItem.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Create an intent to start AddItemActivity
+                Intent intent = new Intent(InventoryActivity.this, AddItemActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        // Send SMS
+        btnSendSms = findViewById(R.id.btnSendSms);
+        btnSendSms.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                checkAndRequestSmsPermission();
+            }
+        });
     }
 
     private void showPermissionDialog() {
@@ -138,37 +179,7 @@ InventoryAdapter.OnItemClickListener
 
     }
 
-    void refreshData(){
-        inventoryDatabase = new InventoryDatabase(this);
-        // Get mock data
-        inventoryItems = inventoryDatabase.getAllItems();
-        // MockInventoryData.generateInventoryItems();
 
-        // Set up GridView with adapter
-        gridView = findViewById(R.id.gridView);
-        InventoryAdapter adapter = new InventoryAdapter(this, inventoryItems,this,this);
-        gridView.setAdapter(adapter);
-
-        // Add New Item
-        btnAddItem = findViewById(R.id.addButton);
-        btnAddItem.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Create an intent to start AddItemActivity
-                Intent intent = new Intent(InventoryActivity.this, AddItemActivity.class);
-                startActivity(intent);
-            }
-        });
-
-        // Send SMS
-        btnSendSms = findViewById(R.id.btnSendSms);
-        btnSendSms.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                checkAndRequestSmsPermission();
-            }
-        });
-    }
     @Override
     protected void onResume(){
         super.onResume();
