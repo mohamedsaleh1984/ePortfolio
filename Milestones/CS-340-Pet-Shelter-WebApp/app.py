@@ -40,13 +40,8 @@ app = Dash(__name__)
 app.title = _helper.getAppName()
 encoded_image = _helper.getImage()
 link_url = _helper.getUrl()
-
 animal_type= _helper.animal_type()
 animal_breed = _helper.animal_breed()
-
-
-print(encoded_image)
-print(link_url)
 
 app.layout = html.Div(
     [
@@ -87,7 +82,8 @@ app.layout = html.Div(
                 style = {
                             'color':'#94190c',
                             'fontFamily':'Open Sans, verdana, arial, sans-serif',
-                            'fontWeight':'bold'
+                            'fontWeight':'bold',
+                           
                         }
             ),
             html.Center('Type', style={'color':'#94190c',
@@ -100,8 +96,10 @@ app.layout = html.Div(
                             'fontFamily':'Open Sans, verdana, arial, sans-serif',
                             'fontWeight':'bold',
                             'margin-left':'10px'}) ,
-             dcc.Dropdown(animal_breed, '----------', id='dropdown-animal-breed',style={'width':"200px",'margin-left':'5px'}),
+            dcc.Dropdown(animal_breed, '----------', id='dropdown-animal-breed',style={'width':"200px",'margin-left':'5px'}),
 
+            html.Button('Search', id='button-search-id', n_clicks=0, style={'margin-left':'25px','color':'#94190c', 'fontWeight':'bold'}),
+            html.Button('Reset', id='button-reset-id', n_clicks=0,style={'margin-left':'5px','color':'#94190c', 'fontWeight':'bold'}),
 
         ]),
     html.Hr(),
@@ -128,6 +126,18 @@ app.layout = html.Div(
                 html.Div(id='map-id',className='col s12 m6')
         ])
 ])
+
+
+@app.callback(
+    Input('button-search-id', 'n_clicks'),
+    Input('button-reset-id', 'n_clicks'),
+    prevent_initial_call=True
+)
+def button_click_handler(btn1, btn2):
+    if ctx.triggered_id == "button-search-id":
+        print("Search Clicked")
+    elif ctx.triggered_id == "button-reset-id":
+        print("Reset Clicked")
 
 
 # Display the breeds of animal based on quantity represented in the data table
