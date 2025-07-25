@@ -1,15 +1,18 @@
-# Standard Imports
 from dash import Dash, dcc, html, dash_table, ctx
 import dash_leaflet as dl
 from dash.dependencies import Input, Output, State
 import plotly.express as px
-import base64
-import os
+
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import mysql.connector
 from mysql.connector import Error
+
+from helper import Helper
+
+# instances
+_helper = Helper()
 
 # MySQL Connection Parameters
 db_config = {
@@ -42,8 +45,9 @@ except Exception as e:
     df = pd.DataFrame()
     print(f"Failed to read data: {e}")
 finally:
-    if connection and connection.is_connected():
-        connection.close()
+    pass
+    # if connection and connection.is_connected():
+    #     connection.close()
 
 # Helper function remains the same
 def check_and_replace(string, message):
@@ -53,19 +57,9 @@ def check_and_replace(string, message):
 
 # App Initialization
 app = Dash(__name__)
-app.title = "Grazioso Salvare Dashboard"
-
-# Encode logo image (unchanged)
-image_filename = 'Grazioso_Salvare_Logo.png'
-encoded_image = ""
-
-if not os.path.exists(image_filename):
-    print(f"WARNING: Logo file '{image_filename}' not found.")
-    encoded_image = b""
-else:
-    encoded_image = base64.b64encode(open(image_filename, 'rb').read())
-
-link_url = "https://www.snhu.edu/"
+app.title = _helper.getAppName()
+encoded_image = _helper.getImage()
+link_url = _helper.getUrl()
 
 # Run the app
 if __name__ == '__main__':
