@@ -118,15 +118,15 @@ app.layout = html.Div(
         page_current=0, # current page selection
         page_size=10 # number of rows per page
         ),
-    # html.Br(),
-    # html.Hr(),
+     html.Br(),
+    html.Hr(),
     # This sets up the dashboard so that your chart and your geolocation chart are side-by-side
-    #  html.Div(className='row',
-    #     style={'display' : 'flex'},
-    #     children=[
-    #             html.Div(id='graph-id',className='col s12 m6'),
-    #             html.Div(id='map-id',className='col s12 m6')
-    #     ])
+     html.Div(className='row',
+        style={'display' : 'flex'},
+        children=[
+                html.Div(id='graph-id',className='col s12 m6'),
+                html.Div(id='map-id',className='col s12 m6')
+        ])
 ])
 
 
@@ -136,8 +136,8 @@ app.layout = html.Div(
     [Input('datatable-id', "derived_virtual_data")])
 def update_graphs(viewData):
     dataset = pd.DataFrame(viewData)
-    # if not dataset.empty:
-    #     return [dcc.Graph(figure = px.pie(dataset, names='breed',title='Preferred Animal Breeds',color_discrete_sequence=px.colors.sequential.RdBu))]
+    if not dataset.empty:
+        return [dcc.Graph(figure = px.pie(dataset, names='breed',title='Preferred Animal Breeds',color_discrete_sequence=px.colors.sequential.RdBu))]
     return html.Div("No data avaliable.")
     
 # This callback will update the geo-location chart for the selected data entry
@@ -170,22 +170,22 @@ def update_map(viewData, index):
     
     # render map
     return [
-    #     dl.Map(style={'width': '1000px', 'height': '500px'},
-    #        center= map_center, zoom=10, children=[
-    #        dl.TileLayer(id="base-layer-id"),
-    #        dl.Marker(
-    #             position = map_center,
-    #            children=[
-    #                   dl.Tooltip(animalBreed),
-    #                   dl.Popup(
-    #                     [
-    #                          html.H3(animalName),
-    #                          html.H3(animalType),
-    #                          html.H3(animalColor)
-    #                     ])
-    #               ]
-    #         ),
-    #    ]),
+        dl.Map(style={'width': '1000px', 'height': '500px'},
+           center= map_center, zoom=10, children=[
+           dl.TileLayer(id="base-layer-id"),
+           dl.Marker(
+                position = map_center,
+               children=[
+                      dl.Tooltip(animalBreed),
+                      dl.Popup(
+                        [
+                             html.H3(animalName),
+                             html.H3(animalType),
+                             html.H3(animalColor)
+                        ])
+                  ]
+            ),
+       ]),
     ]
 
 
@@ -208,7 +208,7 @@ def update_styles(selected_rows):
 ##############################################
 @app.callback(
     Output('datatable-id', "data"),
-    Input('chck-list', 'value'),
+    Input('pet-category-list', 'value'),
 )
 def process_filter(selection):
     # filter object
