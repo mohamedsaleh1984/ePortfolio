@@ -41,6 +41,10 @@ app.title = _helper.getAppName()
 encoded_image = _helper.getImage()
 link_url = _helper.getUrl()
 
+animal_type= _helper.animal_type()
+animal_breed = _helper.animal_breed()
+
+
 print(encoded_image)
 print(link_url)
 
@@ -76,7 +80,7 @@ app.layout = html.Div(
         style={'display' : 'flex'},
         children=[
             dcc.Checklist(
-                id="chck-list",
+                id="pet-category-list",
                 options=['Water Rescue', 'Wilderness Rescue', 'Disaster'],
                 value=[],
                 inline=True,
@@ -85,7 +89,20 @@ app.layout = html.Div(
                             'fontFamily':'Open Sans, verdana, arial, sans-serif',
                             'fontWeight':'bold'
                         }
-            )
+            ),
+            html.Center('Type', style={'color':'#94190c',
+                            'fontFamily':'Open Sans, verdana, arial, sans-serif',
+                            'fontWeight':'bold',
+                            'margin-left':'5px'
+                            }) ,
+            dcc.Dropdown(animal_type, '----------', id='dropdown-animal-type',style={'width':"200px",'margin-left':'5px'}),
+            html.Center('Breed', style={'color':'#94190c',
+                            'fontFamily':'Open Sans, verdana, arial, sans-serif',
+                            'fontWeight':'bold',
+                            'margin-left':'10px'}) ,
+             dcc.Dropdown(animal_breed, '----------', id='dropdown-animal-breed',style={'width':"200px",'margin-left':'5px'}),
+
+
         ]),
     html.Hr(),
     
