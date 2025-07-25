@@ -213,57 +213,6 @@ def update_styles(selected_rows):
     return []
 
 
-##############################################
-# Process User Filters
-##############################################
-@app.callback(
-    Output('datatable-id', "data"),
-    Input('pet-category-list', 'value'),
-)
-def process_filter(selection):
-    # filter object
-    filterObj = {}
-    #Water Rescue
-    if selection == "wr":
-        desiredBreeds = ["Labrador Retriever Mix","Chesapeake Bay Retriever","Newfoundland"]
-        filterObj["animal_type"] = "Dog"
-        filterObj["breed"] = {"$in":desiredBreeds}
-        filterObj["sex_upon_outcome"] = "Intact Female"
-        filterObj["$and"]=[
-                            {"age_upon_outcome_in_weeks":{"$gte":26}},
-                            {"age_upon_outcome_in_weeks":{"$lte":156}}
-                          ]
-        
-    # Wilderness Rescue
-    if selection == "wir":
-        desiredBreeds = ["German Shepherd", "Alaskan Malamute","Old English Sheepdog", "Siberian Husky","Rottweiler"]
-        filterObj["animal_type"] = "Dog"
-        filterObj["breed"] = {"$in":desiredBreeds}
-        filterObj["sex_upon_outcome"] = "Intact Male"
-        filterObj["$and"]=[
-                            {"age_upon_outcome_in_weeks":{"$gte":26}},
-                            {"age_upon_outcome_in_weeks":{"$lte":156}}
-                          ]
-        
-    # Disaster Rescue
-    if selection == "dr":
-        desiredBreeds = ["Doberman Pinscher", "German Shepherd", "Golden Retriever","Bloodhound", "Rottweiler"]
-        filterObj["animal_type"] = "Dog"
-        filterObj["breed"] = {"$in":desiredBreeds}
-        filterObj["sex_upon_outcome"] = "Intact Male"
-        filterObj["$and"]=[
-                            {"age_upon_outcome_in_weeks":{"$gte":20}},
-                            {"age_upon_outcome_in_weeks":{"$lte":300}}
-                          ]
-        
-    # fetch data with filter object
-    data = _shelter.reading(filterObj)
-    filteredDataFrame = pd.DataFrame.from_records(data)
-    # remove _id
-    if "_id" in filteredDataFrame.columns:
-        filteredDataFrame.drop(columns=['_id'], inplace=True)
-        
-    return filteredDataFrame.to_dict('records')
 
 
 
