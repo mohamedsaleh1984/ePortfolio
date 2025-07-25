@@ -1,24 +1,27 @@
 """
 @author: mohamedsaleh2_snhu
 """
-import mysql.connector
-from mysql.connector import Error
+from pymongo import MongoClient
+from bson.objectid import ObjectId
 
 
 class AnimalShelter(object):
-    """ CRUD operatoins for animal collection in MySQL"""
-    def __init__(self, host,databse,username,password):
-        connection = None
-        try:
-            connection = mysql.connector.connect(**db_config)
-            print("Connection to MySQL DB successful")
-        except Error as e:
-            print(f"The error '{e}' occurred")
-        self.connection = connection
-
-    def get_connection(self):
-        return self.connection
-          
+    """ CRUD operatoins for animal collection in MongoDB"""
+    def __init__(self, username,password):
+        # Initizalizing the MongoClient.
+        HOST = 'nv-desktop-services.apporto.com'
+        PORT = 34281
+        DB = 'AAC'
+        COL = 'animals'
+        # Initizalize connection
+        try:    
+            self.client = MongoClient('mongodb://%s:%s@%s:%d' % (username,password,HOST,PORT))
+            self.database = self.client['%s' % (DB)]
+            self.collection = self.database['%s' % (COL)]
+            print("Connection Established..")
+        except:
+            print('Failed to establish connection with Mongodb')
+        
     """Create new animal""" 
     def create(self, data):
         try:    
