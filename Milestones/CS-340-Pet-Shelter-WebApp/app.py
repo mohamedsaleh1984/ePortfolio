@@ -41,11 +41,15 @@ app.title = _helper.getAppName()
 encoded_image = _helper.getImage()
 link_url = _helper.getUrl()
 
+print(encoded_image)
+print(link_url)
+
 app.layout = html.Div(
     [
-     html.Div( style={'display' : 'flex'},
+     html.Div( 
+        style={'display' : 'flex'},
         children=[
-                html.Div(id='graph-id',style={'width':'20%'}, children=[
+                html.Div(id='logo-image-id',style={'width':'20%'}, children=[
                     html.A(
                         href = link_url,
                         children = [
@@ -57,7 +61,7 @@ app.layout = html.Div(
                                 style = {'border': '1px dashed #OE4D92'})
                         ]),
                 ]),
-                html.Div(id='map-id',style={'width':'80%'}, children=[
+                html.Div(id='app-title-id',style={'width':'80%'}, children=[
                     html.Center(html.B(html.P('Grazioso Salvare Dashboard By Mohamed Saleh', 
                     style={'color':'#94190c',
                         'textAlign':'left',
@@ -71,15 +75,10 @@ app.layout = html.Div(
         className='row',
         style={'display' : 'flex'},
         children=[
-            dcc.RadioItems(
-                id='rd-selection',
-                options=[
-                    {'label': 'Water Rescue', 'value': 'wr'},
-                    {'label': 'Wilderness Rescue', 'value': 'wir'},
-                    {'label': 'Disaster', 'value': 'dr'},
-                    {'label': 'Reset', 'value': 'reset'}
-                ],
-                value='reset',
+            dcc.Checklist(
+                id="chck-list",
+                options=['Water Rescue', 'Wilderness Rescue', 'Disaster'],
+                value=[],
                 inline=True,
                 style = {
                             'color':'#94190c',
@@ -89,7 +88,7 @@ app.layout = html.Div(
             )
         ]),
     html.Hr(),
-    html.Div(id='debug-id'),
+    
     dash_table.DataTable(
         id='datatable-id',columns=[{"name": i, "id": i, "deletable": False, "selectable": True} for i in df.columns],data=df.to_dict('records'),
         editable=False, # allow Edit 
@@ -102,8 +101,8 @@ app.layout = html.Div(
         page_current=0, # current page selection
         page_size=10 # number of rows per page
         ),
-    html.Br(),
-    html.Hr(),
+    # html.Br(),
+    # html.Hr(),
     # This sets up the dashboard so that your chart and your geolocation chart are side-by-side
     #  html.Div(className='row',
     #     style={'display' : 'flex'},
@@ -120,13 +119,8 @@ app.layout = html.Div(
     [Input('datatable-id', "derived_virtual_data")])
 def update_graphs(viewData):
     dataset = pd.DataFrame(viewData)
-    if not dataset.empty:
-        return [dcc.Graph(
-            figure = px.pie(dataset, 
-                            names='breed',
-                            title='Preferred Animal Breeds',
-                            color_discrete_sequence=px.colors.sequential.RdBu
-                           ))]
+    # if not dataset.empty:
+    #     return [dcc.Graph(figure = px.pie(dataset, names='breed',title='Preferred Animal Breeds',color_discrete_sequence=px.colors.sequential.RdBu))]
     return html.Div("No data avaliable.")
     
 # This callback will update the geo-location chart for the selected data entry
@@ -154,26 +148,27 @@ def update_map(viewData, index):
     lat, long = rowData['location_lat'], rowData['location_long']
     if pd.isna(lat) or pd.isna(long):
         return [html.H3("No location data available for this animal")]
+    
     map_center = [lat,long]
     
-    # render 
+    # render map
     return [
-        dl.Map(style={'width': '1000px', 'height': '500px'},
-           center= map_center, zoom=10, children=[
-           dl.TileLayer(id="base-layer-id"),
-           dl.Marker(
-                position = map_center,
-               children=[
-                      dl.Tooltip(animalBreed),
-                      dl.Popup(
-                        [
-                             html.H3(animalName),
-                             html.H3(animalType),
-                             html.H3(animalColor)
-                        ])
-                  ]
-            ),
-       ]),
+    #     dl.Map(style={'width': '1000px', 'height': '500px'},
+    #        center= map_center, zoom=10, children=[
+    #        dl.TileLayer(id="base-layer-id"),
+    #        dl.Marker(
+    #             position = map_center,
+    #            children=[
+    #                   dl.Tooltip(animalBreed),
+    #                   dl.Popup(
+    #                     [
+    #                          html.H3(animalName),
+    #                          html.H3(animalType),
+    #                          html.H3(animalColor)
+    #                     ])
+    #               ]
+    #         ),
+    #    ]),
     ]
 
 
@@ -196,7 +191,7 @@ def update_styles(selected_rows):
 ##############################################
 @app.callback(
     Output('datatable-id', "data"),
-    Input('rd-selection', 'value'),
+    Input('chck-list', 'value'),
 )
 def process_filter(selection):
     # filter object
