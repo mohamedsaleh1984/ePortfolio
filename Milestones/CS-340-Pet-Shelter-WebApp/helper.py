@@ -30,4 +30,12 @@ class Helper(object):
             encoded_image = base64.b64encode(open(image_filename, 'rb').read())
         return encoded_image
     
+    #############################################
+    # Check string value if it's NOT valid string
+    # return message Otherwise return string
+    #############################################
+    def check_and_replace(self, string, message):
+        if string is None or len(string) == 0:
+            return message
+        return string
     

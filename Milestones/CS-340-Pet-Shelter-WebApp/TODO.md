@@ -1,0 +1,6 @@
+- fix image loading
+- fix map position
+- fix loading
+- fix title
+- replace the radiobuttons with checkbox
+- Rename columns names instead of Tables columns
