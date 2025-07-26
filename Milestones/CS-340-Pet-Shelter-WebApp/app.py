@@ -42,6 +42,7 @@ encoded_image = _helper.getImage()
 link_url = _helper.getUrl()
 animal_type= _helper.animal_type()
 animal_breed = _helper.animal_breed()
+column_name_mapping = _helper.getCoulmnMapping()
 
 app.layout = html.Div(
     [
@@ -105,7 +106,12 @@ app.layout = html.Div(
     html.Hr(),
     
     dash_table.DataTable(
-        id='datatable-id',columns=[{"name": i, "id": i, "deletable": False, "selectable": True} for i in df.columns],data=df.to_dict('records'),
+        id='datatable-id',
+        columns=[{"name": column_name_mapping.get(i, i),  # Falls back to original name if not in mapping
+             "id": i, 
+             "deletable": False, 
+             "selectable": True} for i in df.columns]
+             ,data=df.to_dict('records'),
         editable=False, # allow Edit 
         filter_action="native",sort_action="native", 
         sort_mode='multi', # sort using different parameter

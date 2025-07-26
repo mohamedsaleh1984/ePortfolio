@@ -39,6 +39,28 @@ class Helper(object):
             return message
         return string
     
+    def getCoulmnMapping(self):
+        
+        return {
+            'outcome_subtype':'Outcome Subtype',
+            "outcome_type":'Outcome Type',
+            "name":'Name',
+            '_id':'#',
+            'animal_id':'Id',
+            "date_of_birth":'Date Of Birth',
+            'datetime':'Date-time', 
+            'monthyear':'Month Year',
+            'name': 'Animal Name',
+            "age_upon_outcome":"Age",
+            'animal_type': 'Type',
+            'age_upon_outcome_in_weeks':'Age Upon Outcome',
+            'breed': 'Breed',
+            'color': 'Color',
+            'location_lat': 'Latitude',
+            'location_long': 'Longitude',
+        }
+    
+
     def animal_breed(self):
         return  [
              '----------',
