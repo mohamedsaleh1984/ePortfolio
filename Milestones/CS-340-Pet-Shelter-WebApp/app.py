@@ -10,6 +10,7 @@ from mysql.connector import Error
 
 from helper import Helper
 from animalShelter import AnimalShelter
+from QueryHelper import QueryHelper
 
 # MySQL Connection Parameters
 db_config = {
@@ -22,12 +23,13 @@ db_config = {
 # instances
 _helper = Helper()
 _shelter = AnimalShelter(db_config)
+_queryHelper = QueryHelper()
 
 # class read method must support return of list object and accept projection json input
 # sending the read method an empty document requests all documents be returned
 # handle unhandled exception
 try:
-    df = pd.DataFrame.from_records(_shelter.reading({}))
+    df = pd.DataFrame.from_records(_shelter.reading(""))
     # if "_id" in df.columns:
     #     df.drop(columns=['_id'],inplace=True)
 except Exception as e:
@@ -45,6 +47,8 @@ animal_breed = _helper.animals_breeds()
 column_name_mapping = _helper.getCoulmnMapping()
 sel_rescue_type = []
 
+# Store the original DataFrame globally
+original_df = df.copy()
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 app.layout = html.Div(
@@ -106,9 +110,9 @@ app.layout = html.Div(
 
             dcc.Dropdown(animal_breed, '----------', id='dropdown-animal-breed',style={'width':"200px",'marginLeft':'5px'}),
 
-            html.Button('Search', id='button-search-id', n_clicks=0, style={'marginLeft':'25px','color':'#94190c', 'fontWeight':'bold','border-color':'#94190c','border-radius':'10px'}),
+            html.Button('Search', id='button-search-id', n_clicks=0, style={'marginLeft':'25px','color':'#94190c', 'fontWeight':'bold','borderColor':'#94190c','borderRadius':'10px'}),
 
-            html.Button('Reset', id='button-reset-id', n_clicks=0,style={'marginLeft':'5px','color':'#94190c', 'fontWeight':'bold','border-color':'#94190c', 'border-radius':'10px'}),
+            html.Button('Reset', id='button-reset-id', n_clicks=0,style={'marginLeft':'5px','color':'#94190c', 'fontWeight':'bold','borderColor':'#94190c', 'borderRadius':'10px'}),
 
         ]),
 
@@ -142,25 +146,6 @@ app.layout = html.Div(
         ])
 ])
 
-
-@app.callback(
-    Input('button-search-id', 'n_clicks'),
-    Input('button-reset-id', 'n_clicks'),
-    prevent_initial_call=True
-)
-def button_click_handler(btn1, btn2):
-    if ctx.triggered_id == "button-search-id":
-        search()
-        print("Search Clicked")
-    elif ctx.triggered_id == "button-reset-id":
-        reset()
-        print("Reset Clicked")
-
-def reset():
-    pass
-
-def search():
-    print('Selected Checklist ', self.sel_rescue_type)
 
 
 # Display the breeds of animal based on quantity represented in the data table
@@ -236,14 +221,49 @@ def update_styles(selected_rows):
     return []
 
 
-@app.callback(
-    Input('pet-category-list', 'value')
-)
-def update_output(selected_values):
-    sel_rescue_type = selected_values
-    return sel_rescue_type
-    
 
+
+@app.callback(
+    Output('datatable-id', 'data'),
+    Output('pet-category-list', 'value'),
+    Output('dropdown-animal-type', 'value'),
+    Output('dropdown-animal-breed', 'value'),
+    Input('button-search-id', 'n_clicks'),
+    Input('button-reset-id', 'n_clicks'),
+    State('pet-category-list', 'value'),
+    State('dropdown-animal-type', 'value'),
+    State('dropdown-animal-breed', 'value'),
+    prevent_initial_call=True
+)
+def update_table(search_clicks, reset_clicks, categories, animal_type, animal_breed):
+    triggered = ctx.triggered_id
+
+    if triggered == 'button-reset-id':
+        # Return full dataset + reset component values
+        df_all = pd.DataFrame.from_records(_shelter.reading(""))
+        return df_all.to_dict('records'), [], '----------', '----------'
+
+    elif triggered == 'button-search-id':
+        # Build query filter based on selected values
+        query = {}
+
+        if categories:
+            query["rescuer_category"] =  categories
+        if animal_type != '----------':
+            query["animal_type"] = animal_type
+        if animal_breed != '----------':
+            query["breed"] = animal_breed
+
+        try:
+            print('query==>', query)
+            sql_statement = _queryHelper.Build(query)
+            print('sql ', sql_statement)
+            df_filtered = pd.DataFrame.from_records(_shelter.reading(""))
+            return df_filtered.to_dict('records'), categories, animal_type, animal_breed
+        except Exception as e:
+            print(f"Query failed: {e}")
+            return [], categories, animal_type, animal_breed
+        
 
 # Run the app
 if __name__ == '__main__':

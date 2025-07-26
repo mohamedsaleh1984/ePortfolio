@@ -62,21 +62,14 @@ class AnimalShelter(object):
             return False
     
     """Find animal based on key/value parameter object"""
-    def reading(self, query):
+    def reading(self, sqlStatement):
         try:
-            if query is None or type(query) is not dict:
-                print('Invalid Query')
-                return None
-            
-            sql = f"SELECT * FROM Pets"
-            
-            if query.keys().__len__() > 0: 
-                where_clause = ' AND '.join([f"{key} = %s" for key in query.keys()])
-                sql = f"SELECT * FROM Pets WHERE {where_clause}"
+            if sqlStatement == None or sqlStatement == "": 
+                sqlStatement = f"SELECT * FROM Pets"
 
-            print("***SQL***", sql)
-
-            self.cursor.execute(sql, list(query.values()))
+            print("SQL EXEC => ", sqlStatement)
+        
+            self.cursor.execute(sqlStatement)
             result = self.cursor.fetchall()
             return result
         except Error as e:
