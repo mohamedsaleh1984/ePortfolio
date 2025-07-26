@@ -5,22 +5,32 @@ class Helper(object):
     def __init__(self):
         pass
 
-    """
-    Get Application Name
-    """
+    
     def getAppName(self):
+        """
+        Get Application Name
+        """
         return "Grazioso Salvare Dashboard"
     
-    """
-    Get Url
-    """
+
+    def getTitle(self):
+        """
+        Get Application Title
+        """
+        return 'Grazioso Salvare Dashboard By Mohamed Saleh'
+    
+    
     def getUrl(self):
+        """
+        Get Url
+        """
         return "https://www.snhu.edu/"
 
-    """
-    Get Encoded Logo Image
-    """
+
     def getImage(self):
+        """
+        Get Encoded Logo Image
+        """
         image_filename = 'Grazioso_Salvare_Logo.png'
         encoded_image  = ""
         if not os.path.exists(image_filename):
@@ -40,7 +50,9 @@ class Helper(object):
         return string
     
     def getCoulmnMapping(self):
-        
+        """
+        Mapping Coulmns to Friendly Titles
+        """
         return {
             'outcome_subtype':'Outcome Subtype',
             "outcome_type":'Outcome Type',
@@ -61,7 +73,10 @@ class Helper(object):
         }
     
 
-    def animal_breed(self):
+    def animals_breeds(self):
+        """
+        Get Animal Breeds
+        """
         return  [
              '----------',
             'Domestic Shorthair Mix',
@@ -884,4 +899,7 @@ class Helper(object):
             ]
         
     def animal_type(self):
+        """
+        Get Animal Types.
+        """
         return ['----------','Cat','Dog','Bird','Livestock','Other']

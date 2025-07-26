@@ -41,7 +41,7 @@ app.title = _helper.getAppName()
 encoded_image = _helper.getImage()
 link_url = _helper.getUrl()
 animal_type= _helper.animal_type()
-animal_breed = _helper.animal_breed()
+animal_breed = _helper.animals_breeds()
 column_name_mapping = _helper.getCoulmnMapping()
 sel_rescue_type = []
 
@@ -65,11 +65,12 @@ app.layout = html.Div(
                         ]),
                 ]),
                 html.Div(id='app-title-id',style={'width':'80%'}, children=[
-                    html.Center(html.B(html.P('Grazioso Salvare Dashboard By Mohamed Saleh', 
+                    html.Center(html.B(html.P(_helper.getTitle(), 
                     style={'color':'#94190c',
                         'textAlign':'left',
                         'marginLeft':'50px',
                         'margin':'auto',
+                        'font-size':'24px',
                         'marginTop':'100px'}))),
                 ])
         ]), 
@@ -87,25 +88,30 @@ app.layout = html.Div(
                             'color':'#94190c',
                             'fontFamily':'Open Sans, verdana, arial, sans-serif',
                             'fontWeight':'bold',
-                           
                         }
             ),
+            
             html.Center('Type', style={'color':'#94190c',
                             'fontFamily':'Open Sans, verdana, arial, sans-serif',
                             'fontWeight':'bold',
                             'margin-left':'5px'
                             }) ,
+            
             dcc.Dropdown(animal_type, '----------', id='dropdown-animal-type',style={'width':"200px",'margin-left':'5px'}),
+            
             html.Center('Breed', style={'color':'#94190c',
                             'fontFamily':'Open Sans, verdana, arial, sans-serif',
                             'fontWeight':'bold',
                             'margin-left':'10px'}) ,
+
             dcc.Dropdown(animal_breed, '----------', id='dropdown-animal-breed',style={'width':"200px",'margin-left':'5px'}),
 
             html.Button('Search', id='button-search-id', n_clicks=0, style={'margin-left':'25px','color':'#94190c', 'fontWeight':'bold'}),
+
             html.Button('Reset', id='button-reset-id', n_clicks=0,style={'margin-left':'5px','color':'#94190c', 'fontWeight':'bold'}),
 
         ]),
+
     html.Hr(),
     
     dash_table.DataTable(
