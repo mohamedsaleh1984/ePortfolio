@@ -47,10 +47,6 @@ class QueryHelper():
                     sql_statment+= self.WildernessRescue()
 
         type = ""
-
-        if len(sql_statment) > 0:
-            sql_statment+= "\nUnion\n"
-
         if "animal_type" in query and "breed" in query:
             type = "SELECT * FROM Pets Where animal_type = '"+ query['animal_type'] +"' AND breed='"+ query['breed']+"'"
         elif "animal_type" in query and "breed" not in query:
@@ -58,6 +54,11 @@ class QueryHelper():
         elif "animal_type" not in query and "breed" in query:
             type = "SELECT * FROM Pets Where breed = '"+ query['breed']+"'"
         
-        sql_statment += type
         
+        if len(sql_statment) > 0 and len(type) > 0:
+            sql_statment+= "\nUnion\n"
+            sql_statment += type
+        else:
+            sql_statment += type
+            
         return sql_statment
