@@ -70,7 +70,7 @@ app.layout = html.Div(
                         'textAlign':'left',
                         'marginLeft':'50px',
                         'margin':'auto',
-                        'font-size':'24px',
+                        'fontSize':'24px',
                         'marginTop':'100px'}))),
                 ])
         ]), 
@@ -94,21 +94,21 @@ app.layout = html.Div(
             html.Center('Type', style={'color':'#94190c',
                             'fontFamily':'Open Sans, verdana, arial, sans-serif',
                             'fontWeight':'bold',
-                            'margin-left':'5px'
+                            'marginLeft':'5px'
                             }) ,
             
-            dcc.Dropdown(animal_type, '----------', id='dropdown-animal-type',style={'width':"200px",'margin-left':'5px'}),
+            dcc.Dropdown(animal_type, '----------', id='dropdown-animal-type',style={'width':"200px",'marginLeft':'5px'}),
             
             html.Center('Breed', style={'color':'#94190c',
                             'fontFamily':'Open Sans, verdana, arial, sans-serif',
                             'fontWeight':'bold',
-                            'margin-left':'10px'}) ,
+                            'marginLeft':'10px'}) ,
 
-            dcc.Dropdown(animal_breed, '----------', id='dropdown-animal-breed',style={'width':"200px",'margin-left':'5px'}),
+            dcc.Dropdown(animal_breed, '----------', id='dropdown-animal-breed',style={'width':"200px",'marginLeft':'5px'}),
 
-            html.Button('Search', id='button-search-id', n_clicks=0, style={'margin-left':'25px','color':'#94190c', 'fontWeight':'bold'}),
+            html.Button('Search', id='button-search-id', n_clicks=0, style={'marginLeft':'25px','color':'#94190c', 'fontWeight':'bold','border-color':'#94190c','border-radius':'10px'}),
 
-            html.Button('Reset', id='button-reset-id', n_clicks=0,style={'margin-left':'5px','color':'#94190c', 'fontWeight':'bold'}),
+            html.Button('Reset', id='button-reset-id', n_clicks=0,style={'marginLeft':'5px','color':'#94190c', 'fontWeight':'bold','border-color':'#94190c', 'border-radius':'10px'}),
 
         ]),
 
