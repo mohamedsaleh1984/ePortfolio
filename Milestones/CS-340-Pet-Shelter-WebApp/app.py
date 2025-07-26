@@ -43,7 +43,10 @@ link_url = _helper.getUrl()
 animal_type= _helper.animal_type()
 animal_breed = _helper.animal_breed()
 column_name_mapping = _helper.getCoulmnMapping()
+sel_rescue_type = []
 
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 app.layout = html.Div(
     [
      html.Div( 
@@ -141,9 +144,17 @@ app.layout = html.Div(
 )
 def button_click_handler(btn1, btn2):
     if ctx.triggered_id == "button-search-id":
+        search()
         print("Search Clicked")
     elif ctx.triggered_id == "button-reset-id":
+        reset()
         print("Reset Clicked")
+
+def reset():
+    pass
+
+def search():
+    print('Selected Checklist ', self.sel_rescue_type)
 
 
 # Display the breeds of animal based on quantity represented in the data table
@@ -219,7 +230,13 @@ def update_styles(selected_rows):
     return []
 
 
-
+@app.callback(
+    Input('pet-category-list', 'value')
+)
+def update_output(selected_values):
+    sel_rescue_type = selected_values
+    return sel_rescue_type
+    
 
 
 # Run the app
