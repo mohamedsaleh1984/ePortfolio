@@ -32,7 +32,6 @@ class QueryHelper():
         return dr_sql
 
     def Build(self, query):
-        print(query)
         sql_statment = ""
 
         if "rescuer_category" in query:
