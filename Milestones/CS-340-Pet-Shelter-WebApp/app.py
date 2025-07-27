@@ -164,10 +164,12 @@ def update_graphs(viewData):
     [Input('datatable-id', "derived_virtual_data"),
      Input('datatable-id', "derived_virtual_selected_rows")])
 def update_map(viewData, index):  
+    if viewData is None:
+        return [html.H3("No Data Available")]
+    
     dff = pd.DataFrame.from_dict(viewData)
-    # Because we only allow single row selection, the list can 
-    # be converted to a row index here
-    if index is None:
+    
+    if index is None :
         return [html.H3("loading...")]
     else:
         row = index[0]
