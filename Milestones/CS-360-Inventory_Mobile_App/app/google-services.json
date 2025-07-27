@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "353231810680",
+    "project_id": "inventory-snhu",
+    "storage_bucket": "inventory-snhu.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:353231810680:android:226d7e385d1838cccf3d8d",
+        "android_client_info": {
+          "package_name": "com.zybooks.inventoryapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAbyBCoFUA_ppFaGgc-JCD1wr_1FwRF9vw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

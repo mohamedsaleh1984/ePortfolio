@@ -32,25 +32,27 @@ class QueryHelper():
         return dr_sql
 
     def Build(self, query):
-        print(query)
-        sql_statment = ""
+        """
+        Convert Dictionary to SQL Statement
+        """
+        sql_statement = ""
 
         if "rescuer_category" in query:
             for item in query['rescuer_category']:
-                if len(sql_statment) > 0:
-                    sql_statment+= "\nUnion\n"
+                if len(sql_statement) > 0:
+                    sql_statement+= "\nUnion\n"
 
                 if item == 'Water Rescue':
-                    sql_statment+= self.WaterRescue()
+                    sql_statement+= self.WaterRescue()
                 elif item == 'Disaster':
-                    sql_statment+= self.DisasterRescue()
+                    sql_statement+= self.DisasterRescue()
                 elif item == 'Wilderness Rescue':
-                    sql_statment+= self.WildernessRescue()
+                    sql_statement+= self.WildernessRescue()
 
         type = ""
 
-        if len(sql_statment) > 0:
-            sql_statment+= "\nUnion\n"
+        if len(sql_statement) > 0:
+            sql_statement += "\nUnion\n"
 
         if "animal_type" in query and "breed" in query:
             type = "SELECT * FROM Pets Where animal_type = '"+ query['animal_type'] +"' AND breed='"+ query['breed']+"'"
@@ -59,6 +61,6 @@ class QueryHelper():
         elif "animal_type" not in query and "breed" in query:
             type = "SELECT * FROM Pets Where breed = '"+ query['breed']+"'"
         
-        sql_statment += type
+        sql_statement += type
         
-        return sql_statment
+        return sql_statement
