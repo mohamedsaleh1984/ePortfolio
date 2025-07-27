@@ -15,7 +15,7 @@ from QueryHelper import QueryHelper
 # MySQL Connection Parameters
 db_config = {
     'host': 'localhost',
-    'database': 'shelter',  # Your database name
+    'database': 'shelter',
     'user': 'root',
     'password': '5624566'
 }
