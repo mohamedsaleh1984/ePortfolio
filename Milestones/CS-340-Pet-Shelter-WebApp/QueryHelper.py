@@ -32,7 +32,6 @@ class QueryHelper():
         return dr_sql
 
     def Build(self, query):
-
         """
         Convert Dictionary to SQL Statement
         """
@@ -61,6 +60,10 @@ class QueryHelper():
         elif "animal_type" not in query and "breed" in query:
             type = "(SELECT * FROM Pets Where breed = '"+ query['breed']+"')"
         
-        sql_statement += type
+        if len(sql_statement) > 0 and len(type) > 0:
+            sql_statement+= "\nUnion\n"
+            sql_statement += type
+        else:
+            sql_statement += type
         
         return sql_statement
