@@ -66,9 +66,7 @@ class AnimalShelter(object):
         try:
             if sqlStatement == None or sqlStatement == "": 
                 sqlStatement = f"SELECT * FROM Pets"
-
-            print("SQL EXEC => ", sqlStatement)
-        
+                    
             self.cursor.execute(sqlStatement)
             result = self.cursor.fetchall()
             return result

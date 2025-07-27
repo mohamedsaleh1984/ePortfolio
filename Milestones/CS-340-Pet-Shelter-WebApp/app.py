@@ -255,9 +255,13 @@ def update_table(search_clicks, reset_clicks, categories, animal_type, animal_br
             query["breed"] = animal_breed
 
         try:
+            # build sql script for user selection.
             sql_statement = _queryHelper.Build(query)
-            # print('sql_statement ', sql_statement )
+            
+            print('sql_statement ', sql_statement )
+            
             df_filtered = pd.DataFrame.from_records(_shelter.reading(sql_statement))
+            
             return df_filtered.to_dict('records'), categories, animal_type, animal_breed
         except Exception as e:
             print(f"Query failed: {e}")
