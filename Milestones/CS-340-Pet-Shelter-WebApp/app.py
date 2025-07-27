@@ -163,7 +163,8 @@ def update_graphs(viewData):
     Output('map-id', "children"),
     [Input('datatable-id', "derived_virtual_data"),
      Input('datatable-id', "derived_virtual_selected_rows")])
-def update_map(viewData, index):  
+def update_map(viewData, index):
+    # in case of no data to present renser H3  
     if viewData is None:
         return [html.H3("No Data Available")]
     
@@ -172,6 +173,7 @@ def update_map(viewData, index):
     if index is None :
         return [html.H3("loading...")]
     else:
+        # Select first pet i the result set
         row = index[0]
     
     rowData = dff.iloc[row]
@@ -181,21 +183,25 @@ def update_map(viewData, index):
     animalBreed = _helper.check_and_replace(rowData['breed'],"No Assigned Breed")
     animalType = "type : " + _helper.check_and_replace(rowData['animal_type'],"No Type Assigned")
     animalColor = "color : " + _helper.check_and_replace(rowData['color'],"N/A")
+    
     # Animal geolocation
     lat, long = rowData['location_lat'], rowData['location_long']
+    
+    # Sanity check for animal location
     if pd.isna(lat) or pd.isna(long):
         return [html.H3("No location data available for this animal")]
     
     map_center = [lat,long]
     
-    # render map
+    # map rendering
     return [
-        dl.Map(style={'width': '1000px', 'height': '500px'},
+        dl.Map(
+           style={'width': '1000px', 'height': '500px'},
            center= map_center, zoom=10, children=[
            dl.TileLayer(id="base-layer-id"),
            dl.Marker(
                 position = map_center,
-               children=[
+                children=[
                       dl.Tooltip(animalBreed),
                       dl.Popup(
                         [
@@ -222,9 +228,7 @@ def update_styles(selected_rows):
         } for row in selected_rows] 
     return []
 
-
-
-
+# This is callback will trigger when user select/change search criteria
 @app.callback(
     Output('datatable-id', 'data'),
     Output('pet-category-list', 'value'),
