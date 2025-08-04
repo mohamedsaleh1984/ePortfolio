@@ -16,6 +16,7 @@ public class Helper {
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
         return stream.toByteArray();
     }
+
     // Convert byte array to Bitmap
     public static Bitmap getBitmapFromBytes(byte[] image) {
         return BitmapFactory.decodeByteArray(image, 0, image.length);
