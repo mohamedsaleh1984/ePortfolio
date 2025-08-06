@@ -20,14 +20,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.zybooks.inventoryapp.helper.Helper;
-import com.zybooks.inventoryapp.model.InventoryItem;
+import com.zybooks.inventoryapp.model.Item;
 
 import com.zybooks.inventoryapp.repo.InventoryDatabase;
 import com.zybooks.inventoryapp.repo.ItemsAdapter;
-import com.zybooks.inventoryapp.repo.MockInventoryData;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class InventoryActivity extends AppCompatActivity
 implements
@@ -35,7 +33,7 @@ implements
         ItemsAdapter.OnItemClickListener
 {
     private static final int SMS_PERMISSION_REQUEST_CODE = 100;
-    private ArrayList<InventoryItem> itemsList;
+    private ArrayList<Item> itemsList;
     private  InventoryDatabase inventoryDatabase;
     private  SearchView searchView;
     private ItemsAdapter itemsAdapter;
@@ -102,8 +100,8 @@ implements
     }
 
     private void filterList(String text){
-        ArrayList<InventoryItem>  filteredList = new ArrayList<>();
-        for(InventoryItem item:itemsList){
+        ArrayList<Item>  filteredList = new ArrayList<>();
+        for(Item item:itemsList){
             if(item.getName().toLowerCase().contains(text.toLowerCase())){
                 filteredList.add(item);
             }
@@ -182,7 +180,7 @@ implements
 
     @Override
     public void onItemClick(int position) {
-        InventoryItem item = itemsList.get(position);
+        Item item = itemsList.get(position);
         Intent intent = new Intent(InventoryActivity.this, AddItemActivity.class);
         intent.putExtra("InventoryActivity.ItemID",String.valueOf(item.getId()));
         startActivity(intent);
@@ -190,7 +188,7 @@ implements
 
     @Override
     public void onItemDeleteButtonClick(int position) {
-        InventoryItem item = itemsList.get(position);
+        Item item = itemsList.get(position);
         new AlertDialog.Builder(InventoryActivity.this)
                 .setTitle("Delete Item")
                 .setMessage("Are you sure you want to delete this item?")

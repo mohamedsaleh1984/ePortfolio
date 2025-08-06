@@ -10,13 +10,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.zybooks.inventoryapp.helper.Helper;
-import com.zybooks.inventoryapp.model.InventoryItem;
+import com.zybooks.inventoryapp.model.Item;
 import com.zybooks.inventoryapp.model.ValidationResult;
 import com.zybooks.inventoryapp.repo.InventoryDatabase;
 
@@ -153,7 +152,7 @@ public class AddItemActivity extends AppCompatActivity {
     }
 
     void readItem(){
-        InventoryItem item =  inventoryDatabase.getItemById(ItemID);
+        Item item =  inventoryDatabase.getItemById(ItemID);
 
         edItemName.setText(item.getName());
         edItemPrice.setText(String.valueOf(item.getPrice()));

@@ -1,21 +1,21 @@
 package com.zybooks.inventoryapp.model;
 
-public class InventoryItem {
+public class Item {
     private int id=-1;
     private String name="";
     private int quantity=0;
     private float price=0.0f;
     private byte[] imageData;
-    public InventoryItem(){
+    public Item(){
 
     }
-    public InventoryItem(int id, String name,   int quantity, float price) {
+    public Item(int id, String name, int quantity, float price) {
         this.id = id;
         this.name = name;
         this.quantity = quantity;
         this.price = price;
     }
-    public InventoryItem(int id, String name,   int quantity, float price, byte[] imageData) {
+    public Item(int id, String name, int quantity, float price, byte[] imageData) {
         this(id,name,quantity,price);
         setImage(imageData);
     }

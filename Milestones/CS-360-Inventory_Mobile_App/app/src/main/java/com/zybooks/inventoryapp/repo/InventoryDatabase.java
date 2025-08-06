@@ -8,7 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import com.zybooks.inventoryapp.abstraction.IItemDbTransactions;
 import com.zybooks.inventoryapp.abstraction.IUsersDbTransactions;
-import com.zybooks.inventoryapp.model.InventoryItem;
+import com.zybooks.inventoryapp.model.Item;
 import com.zybooks.inventoryapp.model.UserDto;
 
 import java.util.ArrayList;
@@ -84,16 +84,16 @@ public class InventoryDatabase extends SQLiteOpenHelper implements IUsersDbTrans
 
 
     // Get all Items from database
-    public ArrayList<InventoryItem> getAllItems() {
+    public ArrayList<Item> getAllItems() {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor =  db.rawQuery("SELECT * FROM " + InventoryTable.TABLE, null);
-        ArrayList<InventoryItem> list = new ArrayList<>();
+        ArrayList<Item> list = new ArrayList<>();
         if (cursor != null){
             if (cursor.moveToFirst()) {
                 do {
 
-                    InventoryItem item
-                            = new InventoryItem(cursor.getInt(0),
+                    Item item
+                            = new Item(cursor.getInt(0),
                             cursor.getString(1),
                             cursor.getInt(2),
                             cursor.getFloat(3),
@@ -168,7 +168,7 @@ public class InventoryDatabase extends SQLiteOpenHelper implements IUsersDbTrans
     /**
      * Get Item by ID
      * */
-    public InventoryItem getItemById(int productId){
+    public Item getItemById(int productId){
         SQLiteDatabase db = this.getReadableDatabase();
         String[] projection = {
                 InventoryTable.COL_ID,
@@ -181,12 +181,12 @@ public class InventoryDatabase extends SQLiteOpenHelper implements IUsersDbTrans
         String selection = InventoryTable.COL_ID + " = ?";
         String[] selectionArgs = {Integer.toString(productId) };
         Cursor cur =  db.query(InventoryTable.TABLE,projection,selection,selectionArgs,null,null, null);
-        ArrayList<InventoryItem> list = new ArrayList<>();
-        InventoryItem item = new InventoryItem();
+        ArrayList<Item> list = new ArrayList<>();
+        Item item = new Item();
 
         if(cur != null && cur.getCount()>0){
             if (cur.moveToFirst()) {
-                item   = new InventoryItem(cur.getInt(0),
+                item   = new Item(cur.getInt(0),
                                         cur.getString(1),
                                         cur.getInt(2),
                                         cur.getFloat(3),

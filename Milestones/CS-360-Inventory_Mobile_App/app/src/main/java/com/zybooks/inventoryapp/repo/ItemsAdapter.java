@@ -14,14 +14,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.zybooks.inventoryapp.R;
 import com.zybooks.inventoryapp.helper.Helper;
-import com.zybooks.inventoryapp.model.InventoryItem;
+import com.zybooks.inventoryapp.model.Item;
 
 import java.util.ArrayList;
 
 public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.InventoryViewHolder> {
 
     private final Context context;
-    private   ArrayList<InventoryItem> inventoryItems;
+    private   ArrayList<Item> items;
     private final OnDeleteItemButtonClickListener deleteButtonClickListener;
     private final OnItemClickListener itemClickListener;
 
@@ -34,11 +34,11 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.InventoryVie
     }
 
     public ItemsAdapter(Context context,
-                            ArrayList<InventoryItem> inventoryItems,
+                            ArrayList<Item> items,
                             OnDeleteItemButtonClickListener deleteListener,
                             OnItemClickListener itemListener) {
         this.context = context;
-        this.inventoryItems = inventoryItems;
+        this.items = items;
         this.deleteButtonClickListener = deleteListener;
         this.itemClickListener = itemListener;
     }
@@ -52,7 +52,7 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.InventoryVie
 
     @Override
     public void onBindViewHolder(@NonNull InventoryViewHolder holder, int position) {
-        InventoryItem item = inventoryItems.get(position);
+        Item item = items.get(position);
 
         holder.nameTextView.setText(item.getName());
         holder.priceTextView.setText("Price: " + item.getPrice());
@@ -83,11 +83,11 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.InventoryVie
 
     @Override
     public int getItemCount() {
-        return inventoryItems.size();
+        return items.size();
     }
 
-    public void setFilteredList(ArrayList<InventoryItem> items){
-        this.inventoryItems = items;
+    public void setFilteredList(ArrayList<Item> items){
+        this.items = items;
     }
     public static class InventoryViewHolder extends RecyclerView.ViewHolder {
         TextView nameTextView, quantityTextView, priceTextView, tvItemID;
