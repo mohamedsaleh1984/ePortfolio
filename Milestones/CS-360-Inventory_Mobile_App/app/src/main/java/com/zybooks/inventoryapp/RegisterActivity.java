@@ -92,7 +92,7 @@ public class RegisterActivity extends AppCompatActivity {
                     } else {
                         progressBar.setVisibility(View.GONE);
                         btnRegister.setEnabled(true);
-                        Helper.SnackbarNotify(view,"Registration failed");
+                        Helper.SnackbarNotify(view,"Registration failed - " + task.getException().getMessage());
                     }
                 });
     }
@@ -133,17 +133,18 @@ public class RegisterActivity extends AppCompatActivity {
             return vr;
         }
 
+        if (edPwd2.getText().length()< 6 || edPwd1.getText().length() < 6) {
+            vr.setHasError(true);
+            vr.setErrorMessage("You must re-enter the password");
+            return vr;
+        }
+
         if (!edPwd1.getText().toString().equals(edPwd2.getText().toString())) {
             vr.setHasError(true);
             vr.setErrorMessage("Password are not matching");
             return vr;
         }
 
-        if (_inventoryDatabase.isUsernameUsed(edEmailAddress.getText().toString())) {
-            vr.setHasError(true);
-            vr.setErrorMessage("Username is already used.");
-            return vr;
-        }
 
         return vr;
     }
