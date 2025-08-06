@@ -2,12 +2,11 @@ package com.zybooks.inventoryapp;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import androidx.appcompat.app.AppCompatActivity;
 import com.zybooks.inventoryapp.helper.Helper;
-import com.zybooks.inventoryapp.model.UserDto;
+import com.zybooks.inventoryapp.model.User;
 import com.zybooks.inventoryapp.model.ValidationResult;
 import com.zybooks.inventoryapp.repo.InventoryDatabase;
 
@@ -59,7 +58,7 @@ public class LoginActivity extends AppCompatActivity {
             return vr;
         }
 
-        UserDto res = inventoryDatabase.getUserByUserName(edUserName.getText().toString());
+        User res = inventoryDatabase.getUserByUserName(edUserName.getText().toString());
         if(res != null && res.getId()>0){
             if(!res.getPassword().equals( edPwd.getText().toString())){
                 vr.setHasError(true);
