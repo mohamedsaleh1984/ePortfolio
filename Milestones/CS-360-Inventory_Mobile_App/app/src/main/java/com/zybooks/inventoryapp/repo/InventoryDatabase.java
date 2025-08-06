@@ -128,6 +128,7 @@ public class InventoryDatabase extends SQLiteOpenHelper implements IUsersDbTrans
         Cursor cursor =  db.query(UsersTable.TABLE,projection,selection,selectionArgs,null,null, null);
 
         if(cursor != null) {
+            /*
             if (cursor.moveToFirst()) {
                 usr = new User(
                         cursor.getInt(0),
@@ -137,6 +138,7 @@ public class InventoryDatabase extends SQLiteOpenHelper implements IUsersDbTrans
                 db.close();
                 return usr;
             }
+            */
         }
         db.close();
         return usr;
@@ -273,6 +275,7 @@ public class InventoryDatabase extends SQLiteOpenHelper implements IUsersDbTrans
         Cursor cursor =  db.rawQuery("SELECT * FROM " + UsersTable.TABLE, null);
         ArrayList<User> list = new ArrayList<>();
         if(cursor != null && cursor.getCount() > 0){
+            /*
             if (cursor.moveToFirst()) {
                 do {
                     User item
@@ -282,6 +285,7 @@ public class InventoryDatabase extends SQLiteOpenHelper implements IUsersDbTrans
                     list.add(item);
                 } while (cursor.moveToNext());
             }
+            */
         }
 
         if(cursor != null)
