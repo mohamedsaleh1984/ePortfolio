@@ -203,7 +203,18 @@ public class InventoryDatabase extends SQLiteOpenHelper implements IUsersDbTrans
         return item;
     }
 
-   // Create New Item
+    @Override
+    public boolean insertItem(String name, String imageUrl, int qty, float price) {
+        return false;
+    }
+
+    @Override
+    public boolean editItem(String id, String name, String imageUrl, int qty, float price) {
+        return false;
+    }
+
+/*
+    // Create New Item
     public boolean insertItem(String name, byte[] image, int qty, float price) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = upsert(-1,name,image,qty,price);
@@ -223,15 +234,15 @@ public class InventoryDatabase extends SQLiteOpenHelper implements IUsersDbTrans
         return result != -1;
 
     }
-
+*/
     /**
      * Delete Item using Item ID
      * */
     @Override
-    public boolean deleteItemById(int id) {
+    public boolean deleteItemById(String id) {
         SQLiteDatabase db = this.getReadableDatabase();
         String selection = InventoryTable.COL_ID + " = ?";
-        String[] selectionArgs = {Integer.toString(id) };
+        String[] selectionArgs = {id };
         int res = db.delete(InventoryTable.TABLE,selection,selectionArgs);
         db.close();
         return res > 0;
