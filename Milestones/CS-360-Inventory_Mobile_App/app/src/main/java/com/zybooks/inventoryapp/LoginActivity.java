@@ -2,69 +2,106 @@ package com.zybooks.inventoryapp;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.firebase.auth.FirebaseAuth;
 import com.zybooks.inventoryapp.helper.Helper;
-import com.zybooks.inventoryapp.model.User;
 import com.zybooks.inventoryapp.model.ValidationResult;
-import com.zybooks.inventoryapp.repo.InventoryDatabase;
+import com.zybooks.inventoryapp.utils.FirebaseHelper;
 
 public class LoginActivity extends AppCompatActivity {
-    private EditText edUserName,edPwd;
-    private InventoryDatabase inventoryDatabase;
+    private EditText etEmail,etPassword;
+    Button btnLogin,btnRegister;
+    private TextView tvRegister;
+    private ProgressBar progressBar;
+    private FirebaseAuth mAuth;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        inventoryDatabase = new InventoryDatabase(this);
-        edUserName=findViewById(R.id.edUserName);
-        edPwd = findViewById(R.id.edPwd);
+        mAuth = FirebaseHelper.getInstance().getAuth();
 
-        Button btnRegister = findViewById(R.id.btnRegister);
+        // Check if user is already logged in
+        if (mAuth.getCurrentUser() != null) {
+            startActivity(new Intent(LoginActivity.this, InventoryActivity.class));
+            finish();
+        }
+
+        initViews();
+
+        btnLogin.setOnClickListener(v -> {
+
+            ValidationResult valid = IsValidToLogin();
+
+            if(!valid.hasError()){
+                progressBar.setVisibility(View.VISIBLE);
+                btnLogin.setEnabled(false);
+
+                String email = etEmail.getText().toString().trim();
+                String password = etPassword.getText().toString().trim();
+
+                mAuth.signInWithEmailAndPassword(email, password)
+                        .addOnCompleteListener(task -> {
+                            progressBar.setVisibility(View.GONE);
+                            btnLogin.setEnabled(true);
+
+                            if (task.isSuccessful()) {
+                                Toast.makeText(LoginActivity.this, "Login successful", Toast.LENGTH_SHORT).show();
+                                startActivity(new Intent(LoginActivity.this, InventoryActivity.class));
+                                finish();
+                            } else {
+                                Toast.makeText(LoginActivity.this, "Login failed: " + task.getException().getMessage(),
+                                        Toast.LENGTH_SHORT).show();
+                            }
+                        });
+
+
+            }else{
+                Helper.SnackbarNotify(v,valid.getErrorMessage());
+            }
+        });
+
+        btnRegister = findViewById(R.id.btnRegister);
         btnRegister.setOnClickListener(v -> {
             // Create an intent to start SecondActivity
             Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
             startActivity(intent);  // Start the second activity
         });
+    }
 
-        Button btnLogin = findViewById(R.id.btnLogin);
-        btnLogin.setOnClickListener(v -> {
-
-            ValidationResult valid = IsValidToLogin();
-            if(!valid.hasError()){
-                // Create an intent to start InventoryActivity
-                Intent intent = new Intent(LoginActivity.this, InventoryActivity.class);
-                startActivity(intent);  // Start the second activity
-            }else{
-                Helper.SnackbarNotify(v,valid.getErrorMessage());
-            }
-        });
+    private void initViews(){
+        etEmail =findViewById(R.id.edEmailAddress);
+        etPassword = findViewById(R.id.edPwd);
+        btnLogin = findViewById(R.id.btnLogin);
+        btnRegister = findViewById(R.id.btnRegister);
+        btnLogin = findViewById(R.id.btnLogin);
+        progressBar = findViewById(R.id.progressBar);
     }
 
     private ValidationResult IsValidToLogin(){
         ValidationResult vr = new ValidationResult(false,"");
 
-        if(edUserName.getText().length() == 0){
+
+        if(etEmail.getText().length() == 0){
             vr.setHasError(true);
-            vr.setErrorMessage("You must enter Username.");
+            vr.setErrorMessage("You must enter your email.");
             return vr;
         }
 
-        if(edPwd.getText().toString().isEmpty()){
+        if(etPassword.getText().toString().isEmpty()){
             vr.setHasError(true);
             vr.setErrorMessage("Password can't be empty.");
             return vr;
-        }
-
-        User res = inventoryDatabase.getUserByUserName(edUserName.getText().toString());
-        if(res != null && res.getId()>0){
-            if(!res.getPassword().equals( edPwd.getText().toString())){
-                vr.setHasError(true);
-                vr.setErrorMessage("Please check your account.");
-                return vr;
-            }
         }
 
         return vr;

@@ -94,13 +94,13 @@ public class AddItemActivity extends AppCompatActivity {
         byte[] imageBytes = Helper.getBytesFromBitmap(bitmap);
         int qty =  Integer.parseInt( edItemQty.getText().toString());
         float price = Float.parseFloat(edItemPrice.getText().toString());
-        boolean result;
+        boolean result = false;
 
         if(ItemID == -1){
-            result  = inventoryDatabase.insertItem(name,imageBytes,qty,price);
+
         }
         else{
-            result  = inventoryDatabase.editItem(ItemID,name,imageBytes,qty,price);
+
         }
 
         if(result){
@@ -135,7 +135,7 @@ public class AddItemActivity extends AppCompatActivity {
             return validationResult;
         }
 
-        if( Integer.getInteger(edItemQty.getText().toString()) <= 0){
+        if( edItemQty.getText() != null && Integer.getInteger(edItemQty.getText().toString()) <= 0){
             validationResult = new ValidationResult(true,"Qty can't be negative or zero");
             return validationResult;
         }
@@ -157,12 +157,13 @@ public class AddItemActivity extends AppCompatActivity {
         edItemName.setText(item.getName());
         edItemPrice.setText(String.valueOf(item.getPrice()));
         edItemQty.setText(String.valueOf(item.getQuantity()));
-        byte[] bitarray = item.getImage();
 
-        if  (bitarray != null && bitarray.length > 0){
+        String itemImageUrl = item.getImageUrl();
+
+        if  (itemImageUrl != null && itemImageUrl.length() > 0){
             // bytes
-            Bitmap bmp = Helper.getBitmapFromBytes(bitarray);
-            imageView.setImageBitmap(Bitmap.createScaledBitmap(bmp, bmp.getWidth(), bmp.getHeight(), false));
+            // Bitmap bmp = Helper.getBitmapFromBytes(bitarray);
+            // imageView.setImageBitmap(Bitmap.createScaledBitmap(bmp, bmp.getWidth(), bmp.getHeight(), false));
         }
     }
 

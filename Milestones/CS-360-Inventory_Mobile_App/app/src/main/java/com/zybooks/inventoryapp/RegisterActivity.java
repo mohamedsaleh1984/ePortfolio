@@ -19,7 +19,7 @@ public class RegisterActivity extends AppCompatActivity {
         setContentView(R.layout.activity_register);
 
         _inventoryDatabase = new InventoryDatabase(this);
-        edUserName = findViewById(R.id.edUserName);
+        edUserName = findViewById(R.id.edEmailAddress);
         edPwd1 = findViewById(R.id.edPwd);
         edPwd2 = findViewById(R.id.edReenterPwd);
 

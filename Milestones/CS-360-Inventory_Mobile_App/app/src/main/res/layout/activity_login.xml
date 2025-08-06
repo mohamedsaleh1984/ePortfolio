@@ -30,7 +30,7 @@
         />
 
     <EditText
-        android:id="@+id/edUserName"
+        android:id="@+id/edEmailAddress"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
@@ -38,7 +38,7 @@
         android:layout_marginEnd="-4dp"
         android:autofillHints="emailAddress"
         android:focusable="true"
-        android:hint="@string/username"
+        android:hint="@string/emailaddress"
         android:textColorHighlight="#120f46"
         android:textColorHint="#120f46" />
 
@@ -79,6 +79,13 @@
             android:gravity="center"
             android:id="@+id/btnRegister"  />
     </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:visibility="invisible"
+        android:layout_height="wrap_content" />
 
 
 </LinearLayout>

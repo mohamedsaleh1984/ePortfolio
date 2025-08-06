@@ -2,7 +2,7 @@
     <string name="app_name">InventoryApp</string>
     <string name="login">Login</string>
     <string name="inventory_wizard">Inventory Wizard</string>
-    <string name="username">Please enter your username</string>
+    <string name="emailaddress">Please enter your email address</string>
     <string name="password">Please enter your password</string>
     <string name="reenter">Please re-enter your password</string>
     <string name="register">Register</string>
