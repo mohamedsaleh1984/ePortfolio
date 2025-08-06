@@ -1,37 +1,37 @@
 package com.zybooks.inventoryapp.model;
 
+import java.util.UUID;
+
 public class Item {
-    private int id=-1;
+    private String id="";
     private String name="";
     private int quantity=0;
     private float price=0.0f;
-    private byte[] imageData;
+    private String imageUrl;
+    private long createdAt;
     public Item(){
-
     }
-    public Item(int id, String name, int quantity, float price) {
-        this.id = id;
+
+    public Item( String name, int quantity, float price,String url) {
+        this.id = UUID.randomUUID().toString();
         this.name = name;
         this.quantity = quantity;
         this.price = price;
-    }
-    public Item(int id, String name, int quantity, float price, byte[] imageData) {
-        this(id,name,quantity,price);
-        setImage(imageData);
+        this.imageUrl = url;
+        this.createdAt = System.currentTimeMillis();
     }
 
-    private void setImage(byte[] imageData)
-    {
-        this.imageData = imageData;
-    }
+    public String getImageUrl() { return imageUrl; }
+    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
 
     // Getters
-    public int getId() { return id; }
+    public String getId() { return id; }
+
     public String getName() { return name; }
     public int getQuantity() { return quantity; }
     public float getPrice(){
         return  price;
     }
-    public byte[] getImage(){return imageData;}
-
+    public long getCreatedAt() { return createdAt; }
+    public void setCreatedAt(long createdAt) { this.createdAt = createdAt; }
 }

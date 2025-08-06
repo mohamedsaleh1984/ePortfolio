@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import com.zybooks.inventoryapp.abstraction.IItemDbTransactions;
 import com.zybooks.inventoryapp.abstraction.IUsersDbTransactions;
 import com.zybooks.inventoryapp.model.Item;
-import com.zybooks.inventoryapp.model.UserDto;
+import com.zybooks.inventoryapp.model.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -88,6 +88,7 @@ public class InventoryDatabase extends SQLiteOpenHelper implements IUsersDbTrans
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor =  db.rawQuery("SELECT * FROM " + InventoryTable.TABLE, null);
         ArrayList<Item> list = new ArrayList<>();
+       /*
         if (cursor != null){
             if (cursor.moveToFirst()) {
                 do {
@@ -106,13 +107,14 @@ public class InventoryDatabase extends SQLiteOpenHelper implements IUsersDbTrans
         if(cursor != null)
             cursor.close();
         db.close();
+        */
         return list;
     }
 
     /**
      * Get User By UserName
      * */
-    public UserDto getUserByUserName(String username){
+    public User getUserByUserName(String username){
         SQLiteDatabase db = this.getReadableDatabase();
         String[] projection = {
                 UsersTable.COL_ID,
@@ -120,14 +122,14 @@ public class InventoryDatabase extends SQLiteOpenHelper implements IUsersDbTrans
                 UsersTable.COL_PASSWORD
         };
 
-        UserDto usr = new UserDto();
+        User usr = new User();
         String selection = UsersTable.COL_USERNAME + " = ?";
         String[] selectionArgs = {username };
         Cursor cursor =  db.query(UsersTable.TABLE,projection,selection,selectionArgs,null,null, null);
 
         if(cursor != null) {
             if (cursor.moveToFirst()) {
-                usr = new UserDto(
+                usr = new User(
                         cursor.getInt(0),
                         cursor.getString(1),
                         cursor.getString(2));
@@ -151,7 +153,7 @@ public class InventoryDatabase extends SQLiteOpenHelper implements IUsersDbTrans
                 UsersTable.COL_PASSWORD
         };
 
-        UserDto usr = new UserDto();
+        User usr = new User();
         String selection = UsersTable.COL_USERNAME + " = ?";
         String[] selectionArgs = {username };
         Cursor cursor =  db.query(UsersTable.TABLE,projection,selection,selectionArgs,null,null, null);
@@ -183,7 +185,7 @@ public class InventoryDatabase extends SQLiteOpenHelper implements IUsersDbTrans
         Cursor cur =  db.query(InventoryTable.TABLE,projection,selection,selectionArgs,null,null, null);
         ArrayList<Item> list = new ArrayList<>();
         Item item = new Item();
-
+        /*
         if(cur != null && cur.getCount()>0){
             if (cur.moveToFirst()) {
                 item   = new Item(cur.getInt(0),
@@ -197,6 +199,7 @@ public class InventoryDatabase extends SQLiteOpenHelper implements IUsersDbTrans
         if(cur != null)
             cur.close();
         db.close();
+        */
         return item;
     }
 
@@ -254,15 +257,15 @@ public class InventoryDatabase extends SQLiteOpenHelper implements IUsersDbTrans
     /**
      * Get All users
      */
-    public List<UserDto> getAllUsers() {
+    public List<User> getAllUsers() {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor =  db.rawQuery("SELECT * FROM " + UsersTable.TABLE, null);
-        ArrayList<UserDto> list = new ArrayList<>();
+        ArrayList<User> list = new ArrayList<>();
         if(cursor != null && cursor.getCount() > 0){
             if (cursor.moveToFirst()) {
                 do {
-                    UserDto item
-                            = new UserDto(
+                    User item
+                            = new User(
                             cursor.getString(1),
                             cursor.getString(2));
                     list.add(item);
