@@ -60,7 +60,7 @@ public class LoginActivity extends AppCompatActivity {
                                 startActivity(new Intent(LoginActivity.this, InventoryActivity.class));
                                 finish();
                             } else {
-                                Toast.makeText(LoginActivity.this, "Login failed: You need to register your account first.", Toast.LENGTH_SHORT).show();
+                                Helper.SnackbarNotify(v,"Login failed: You need to register your account first.");
                             }
                         });
 
