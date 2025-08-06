@@ -80,7 +80,6 @@ public class RegisterActivity extends AppCompatActivity {
                                     btnRegister.setEnabled(true);
 
                                     if (userTask.isSuccessful()) {
-
                                         Helper.SnackbarNotify(view,"Registration successful");
                                         startActivity(new Intent(RegisterActivity.this, InventoryActivity.class));
                                         finish();
