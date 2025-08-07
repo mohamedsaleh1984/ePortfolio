@@ -90,14 +90,10 @@ public class AddItemActivity extends AppCompatActivity {
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         if (documentSnapshot.exists()) {
 
-                            // Log.wtf(TAG,documentSnapshot.toString());
-
                             String id = documentSnapshot.getString("id");
                             String name = documentSnapshot.getString("name");
                             float price = documentSnapshot.get("price", Float.class);
                             int quantity = documentSnapshot.get("quantity",Integer.class);
-                            String imageUrl = documentSnapshot.getString("imageUrl");
-
 
                             ItemID = id;
                             edItemName.setText(name);
@@ -108,7 +104,6 @@ public class AddItemActivity extends AppCompatActivity {
                             if  (itemImageUrl != null && !itemImageUrl.isEmpty() ){
                                 loadImageFromFirebase(itemImageUrl,imageView);
                             }
-
 
                         } else {
                             Log.d(TAG, "No such document");
