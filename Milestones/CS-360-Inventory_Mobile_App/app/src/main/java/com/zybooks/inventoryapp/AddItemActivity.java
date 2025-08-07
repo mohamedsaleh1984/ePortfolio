@@ -14,10 +14,12 @@ import android.widget.ImageView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.StorageReference;
 import com.zybooks.inventoryapp.helper.Helper;
 import com.zybooks.inventoryapp.model.Item;
 import com.zybooks.inventoryapp.model.ValidationResult;
-import com.zybooks.inventoryapp.repo.InventoryDatabase;
+import com.zybooks.inventoryapp.utils.FirebaseHelper;
 
 import java.io.IOException;
 
@@ -25,24 +27,25 @@ public class AddItemActivity extends AppCompatActivity {
     private static final int PICK_IMAGE_REQUEST = 1;
     private ImageView imageView;
     private EditText edItemName,edItemQty,edItemPrice;
-    private InventoryDatabase inventoryDatabase;
+
     private Button btnAddEdit,btnCancel;
     private ValidationResult validationResult;
-    private int ItemID = -1;
+    private String ItemID = "";
+    private Uri selectedImageUri;
+    private FirebaseFirestore db;
+    private StorageReference storageRef;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_item);
 
-        inventoryDatabase = new InventoryDatabase(this);
-        // bind item details from UI
-        imageView  = findViewById(R.id.imgViewItem);
-        edItemName = findViewById(R.id.edItemName);
-        edItemPrice = findViewById(R.id.edItemPrice);
-        edItemQty = findViewById(R.id.edItemQty);
+        initViews();
+        db = FirebaseHelper.getInstance().getFirestore();
+        storageRef = FirebaseHelper.getInstance().getStorageReference();
 
-        btnAddEdit = findViewById(R.id.btnAddItem);
+
 
         btnAddEdit.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -51,6 +54,7 @@ public class AddItemActivity extends AppCompatActivity {
                 finish();
             }
         });
+
         btnCancel = findViewById(R.id.btnCancel);
         btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -72,20 +76,17 @@ public class AddItemActivity extends AppCompatActivity {
         Intent intent = getIntent();
         String strItemID = intent.getStringExtra("InventoryActivity.ItemID");
 
-        if(strItemID != null && strItemID.length() >0){
+        if(strItemID != null && !strItemID.isEmpty()){
             try {
-                Log.w("EXC",strItemID);
-                ItemID = Integer.parseInt(strItemID);
-                if(ItemID > 0){
-                    readItem();
-                }
+                readItem();
             }catch (Exception ex){
                 Log.w("EXC","Failed to cast.");
             }
-
         }
 
     }
+
+
 
     void createUpdateItem(){
         String name = edItemName.getText().toString();
@@ -96,11 +97,11 @@ public class AddItemActivity extends AppCompatActivity {
         float price = Float.parseFloat(edItemPrice.getText().toString());
         boolean result = false;
 
-        if(ItemID == -1){
-
+        if(ItemID.isEmpty()){
+            //TODO: Create New Item
         }
         else{
-
+            //TODO: Update Item
         }
 
         if(result){
@@ -152,7 +153,8 @@ public class AddItemActivity extends AppCompatActivity {
     }
 
     void readItem(){
-        Item item =  inventoryDatabase.getItemById(ItemID);
+        // TODO: fetch content from database....
+        Item item =  new Item("",10,10,"");
 
         edItemName.setText(item.getName());
         edItemPrice.setText(String.valueOf(item.getPrice()));
@@ -161,10 +163,19 @@ public class AddItemActivity extends AppCompatActivity {
         String itemImageUrl = item.getImageUrl();
 
         if  (itemImageUrl != null && itemImageUrl.length() > 0){
-            // bytes
+            // TODO: Render Image from Url
             // Bitmap bmp = Helper.getBitmapFromBytes(bitarray);
             // imageView.setImageBitmap(Bitmap.createScaledBitmap(bmp, bmp.getWidth(), bmp.getHeight(), false));
         }
+    }
+
+    private void initViews(){
+        // bind item details from UI
+        imageView  = findViewById(R.id.imgViewItem);
+        edItemName = findViewById(R.id.edItemName);
+        edItemPrice = findViewById(R.id.edItemPrice);
+        edItemQty = findViewById(R.id.edItemQty);
+        btnAddEdit = findViewById(R.id.btnAddItem);
     }
 
 

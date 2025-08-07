@@ -11,16 +11,14 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.rpc.Help;
 import com.zybooks.inventoryapp.helper.Helper;
 import com.zybooks.inventoryapp.model.User;
 import com.zybooks.inventoryapp.model.ValidationResult;
-import com.zybooks.inventoryapp.repo.InventoryDatabase;
 import com.zybooks.inventoryapp.utils.FirebaseHelper;
 
 public class RegisterActivity extends AppCompatActivity {
     private EditText edEmailAddress, edPwd1, edPwd2;
-    private InventoryDatabase _inventoryDatabase;
+
     private Button btnRegister,btnCancel;
     private ProgressBar progressBar;
     private FirebaseAuth mAuth;

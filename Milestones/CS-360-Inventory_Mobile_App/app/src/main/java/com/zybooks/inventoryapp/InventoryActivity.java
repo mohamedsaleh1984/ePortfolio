@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.SearchView;
 import android.widget.Toast;
@@ -22,7 +21,6 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.zybooks.inventoryapp.helper.Helper;
 import com.zybooks.inventoryapp.model.Item;
 
-import com.zybooks.inventoryapp.repo.InventoryDatabase;
 import com.zybooks.inventoryapp.repo.ItemsAdapter;
 
 import java.util.ArrayList;
@@ -34,7 +32,7 @@ implements
 {
     private static final int SMS_PERMISSION_REQUEST_CODE = 100;
     private ArrayList<Item> itemsList;
-    private  InventoryDatabase inventoryDatabase;
+
     private  SearchView searchView;
     private ItemsAdapter itemsAdapter;
 
@@ -63,14 +61,9 @@ implements
     }
 
     void refreshData(){
-        inventoryDatabase = new InventoryDatabase(this);
 
-        itemsList = inventoryDatabase.getAllItems();
-        // Get mock data
-        //itemsList = MockInventoryData.generateInventoryItems();
-
-        Log.w("TEST","COUNT IS " +itemsList.size());
-
+        // TODO: Fetch Data from Firebase.
+        itemsList =  new ArrayList<>();
 
         itemsAdapter = new ItemsAdapter(this, itemsList, this, this);
         RecyclerView recyclerView = findViewById(R.id.recyclerView);
@@ -193,7 +186,8 @@ implements
                 .setTitle("Delete Item")
                 .setMessage("Are you sure you want to delete this item?")
                 .setPositiveButton("Delete", (dialog, which) -> {
-                    boolean res = inventoryDatabase.deleteItemById(item.getId());
+                    // TODO: DELETE ITEM
+                    boolean res =true;
                     if(res){
                         refreshData();
                     }else{
