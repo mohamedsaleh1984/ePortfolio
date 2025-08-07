@@ -9,6 +9,7 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.io.ByteArrayOutputStream;
 
+//TODO: Add Comments
 public class Helper {
     // Convert Bitmap to byte array
     public static byte[] getBytesFromBitmap(Bitmap bitmap) {

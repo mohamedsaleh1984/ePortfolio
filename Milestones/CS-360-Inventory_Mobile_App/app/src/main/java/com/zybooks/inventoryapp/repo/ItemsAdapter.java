@@ -62,6 +62,7 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.InventoryVie
         String imageUrl  = item.getImageUrl();
         if (imageUrl != null && !imageUrl.isEmpty()) {
             /*
+            //TODO: Render Image
             Bitmap bmp = Helper.getBitmapFromBytes(bitarray);
             holder.imgView.setImageBitmap(Bitmap.createScaledBitmap(
                     bmp, bmp.getWidth(), bmp.getHeight(), false));

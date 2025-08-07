@@ -104,6 +104,7 @@ public class AddItemActivity extends AppCompatActivity {
             //TODO: Update Item
         }
 
+        //TODO: Proper Check
         if(result){
             Helper.ToastNotify(AddItemActivity.this,"Item Created/Updated Successfully.");
         }

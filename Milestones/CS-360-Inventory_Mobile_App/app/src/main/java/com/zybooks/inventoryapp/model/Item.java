@@ -2,6 +2,7 @@ package com.zybooks.inventoryapp.model;
 
 import java.util.UUID;
 
+//TODO: Add Comments.
 public class Item {
     private String id="";
     private String name="";

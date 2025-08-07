@@ -103,6 +103,8 @@ public class RegisterActivity extends AppCompatActivity {
         btnRegister = findViewById(R.id.btnRegister);
         progressBar = findViewById(R.id.progressBar);
     }
+
+    // TODO: Use Trim for Strings
     ValidationResult validateRegister() {
         ValidationResult vr = new ValidationResult(false, "");
 
@@ -141,7 +143,6 @@ public class RegisterActivity extends AppCompatActivity {
             vr.setErrorMessage("Password are not matching");
             return vr;
         }
-
 
         return vr;
     }

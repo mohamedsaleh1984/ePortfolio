@@ -32,7 +32,6 @@ implements
 {
     private static final int SMS_PERMISSION_REQUEST_CODE = 100;
     private ArrayList<Item> itemsList;
-
     private  SearchView searchView;
     private ItemsAdapter itemsAdapter;
 
@@ -55,7 +54,6 @@ implements
                 return true;
             }
         });
-
 
         refreshData();
     }

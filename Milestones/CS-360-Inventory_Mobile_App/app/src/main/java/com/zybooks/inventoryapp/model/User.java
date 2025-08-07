@@ -1,7 +1,7 @@
 package com.zybooks.inventoryapp.model;
 
 import java.util.UUID;
-
+//TODO: Add Comments.
 public class User {
     private String id ="";
     private String emailAddress ="" ;
