@@ -114,7 +114,10 @@ public class AddItemActivity extends AppCompatActivity {
         float price = Float.parseFloat(edItemPrice.getText().toString().trim());
 
         if(ItemID.isEmpty()){
-            Item item = new Item(name,qty,price,"");
+            String ItemID = UUID.randomUUID().toString();
+            uploadImageToFirebaseStorage(imageUri, ItemID);
+
+            Item item = new Item(ItemID,name,qty,price,ImageUrl);
             db.collection("items")
                     .add(item)
                     .addOnSuccessListener(documentReference -> {
