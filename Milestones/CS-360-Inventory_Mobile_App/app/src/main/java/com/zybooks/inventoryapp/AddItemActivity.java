@@ -114,7 +114,7 @@ public class AddItemActivity extends AppCompatActivity {
 
         if(ItemID.isEmpty()){
             String ItemID = UUID.randomUUID().toString();
-            uploadImageToFirebaseStorage(imageUri, ItemID);
+           // uploadImageToFirebaseStorage(imageUri, ItemID);
 
             Item item = new Item(ItemID,name,qty,price,ImageUrl);
             db.collection("items")
@@ -166,11 +166,12 @@ public class AddItemActivity extends AppCompatActivity {
                 return validationResult;
             }
         }
-
+        /*
         if(imageUri == null){
             validationResult = new ValidationResult(true,"You need to pick product image.");
             return validationResult;
         }
+        */
 
         validationResult = new ValidationResult(false,"");
         return validationResult;
