@@ -41,6 +41,7 @@ implements
     private ArrayList<Item> itemList;
     private  SearchView searchView;
     private ItemsAdapter itemsAdapter;
+    private RecyclerView recyclerView;
     private FirebaseFirestore db;
     private FloatingActionButton btnSendSms,btnAddItem;
 
@@ -50,6 +51,15 @@ implements
         setContentView(R.layout.activity_inventory);
 
         initViews();
+
+        itemList =  new ArrayList<>();
+        itemsAdapter = new ItemsAdapter(this, itemList, this, this);
+        recyclerView.setHasFixedSize(true);
+
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(itemsAdapter);
+
+        db = FirebaseHelper.getInstance().getFirestore();
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -110,6 +120,7 @@ implements
     }
 
     private void  initViews(){
+        recyclerView = findViewById(R.id.recyclerView);
         btnSendSms = findViewById(R.id.btnSendSms);
         btnAddItem = findViewById(R.id.addButton);
         searchView = findViewById(R.id.searchView);
