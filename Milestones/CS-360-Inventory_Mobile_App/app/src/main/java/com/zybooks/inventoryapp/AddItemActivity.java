@@ -36,6 +36,7 @@ public class AddItemActivity extends AppCompatActivity {
     private ValidationResult validationResult;
     private String ItemID = "";
     private Uri imageUri= null;
+    private  String ImageUrl="";
     private FirebaseFirestore db;
     private StorageReference storageRef;
 
@@ -46,6 +47,7 @@ public class AddItemActivity extends AppCompatActivity {
         setContentView(R.layout.activity_add_item);
 
         initViews();
+
         db = FirebaseHelper.getInstance().getFirestore();
         storageRef = FirebaseHelper.getInstance().getStorageReference();
 
@@ -89,10 +91,54 @@ public class AddItemActivity extends AppCompatActivity {
         }
 
     }
+    private void initViews(){
+        // bind item details from UI
+        imageView  = findViewById(R.id.imgViewItem);
+        edItemName = findViewById(R.id.edItemName);
+        edItemPrice = findViewById(R.id.edItemPrice);
+        edItemQty = findViewById(R.id.edItemQty);
 
+        btnAddEdit = findViewById(R.id.btnAddItem);
+        btnCancel = findViewById(R.id.btnCancel);
+    }
+    private  void evtHandlers(){
+        btnAddEdit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                createUpdateItem();
 
+            }
+        });
 
-    void createUpdateItem(){
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // place holder
+                finish();
+            }
+        });
+
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                selectImage();
+            }
+        });
+
+        Intent intent = getIntent();
+        String strItemID = intent.getStringExtra("InventoryActivity.ItemID");
+
+        if(strItemID != null && !strItemID.isEmpty()){
+            try {
+                readItem();
+            }catch (Exception ex){
+                Log.w("EXC","Failed to cast.");
+            }
+        }
+
+    }
+
+    private void createUpdateItem(){
 
         ValidationResult validation_result = validatesSaveItem();
         if(validation_result.hasError()){
@@ -127,30 +173,34 @@ public class AddItemActivity extends AppCompatActivity {
     /**
      * Validate given data before saving Item
      * */
-    ValidationResult validatesSaveItem(){
+    private ValidationResult validatesSaveItem(){
         if(edItemName.getText().toString().isBlank() || edItemName.getText().toString().isEmpty()){
-            validationResult = new ValidationResult(true,"Name can't be empty");
+            validationResult = new ValidationResult(true,"Name can't be empty.");
             return validationResult;
         }
 
         if(edItemPrice.getText().toString().isBlank() || edItemPrice.getText().toString().isEmpty()){
-            validationResult = new ValidationResult(true,"Price can't be empty");
+            validationResult = new ValidationResult(true,"Price can't be empty.");
             return validationResult;
         }
 
-        if( Float.valueOf (edItemPrice.getText().toString()) <= 0){
-            validationResult = new ValidationResult(true,"Price can't be negative or zero");
+        if( Float.parseFloat(edItemPrice.getText().toString()) <= 0){
+            validationResult = new ValidationResult(true,"Price can't be negative or zero.");
             return validationResult;
         }
 
         if(edItemQty.getText().toString().isBlank() || edItemQty.getText().toString().isEmpty()){
-            validationResult = new ValidationResult(true,"Qty can't be empty");
+            validationResult = new ValidationResult(true,"Qty can't be empty.");
             return validationResult;
         }
 
-        if( edItemQty.getText() != null && Integer.getInteger(edItemQty.getText().toString()) <= 0){
-            validationResult = new ValidationResult(true,"Qty can't be negative or zero");
-            return validationResult;
+        if( edItemQty.getText() != null){
+            int qty = Integer.parseInt(edItemQty.getText().toString().trim());
+
+            if(qty <= 0){
+                validationResult = new ValidationResult(true,"Qty can't be negative or zero.");
+                return validationResult;
+            }
         }
 
         validationResult = new ValidationResult(false,"");
@@ -164,20 +214,16 @@ public class AddItemActivity extends AppCompatActivity {
         startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
     }
 
-    void readItem(){
-        // TODO: fetch content from database....
-        Item item =  new Item("",10,10,"");
-
+    private void readItem(){
+        Item item = new Item();
         edItemName.setText(item.getName());
         edItemPrice.setText(String.valueOf(item.getPrice()));
         edItemQty.setText(String.valueOf(item.getQuantity()));
 
         String itemImageUrl = item.getImageUrl();
 
-        if  (itemImageUrl != null && itemImageUrl.length() > 0){
-            // TODO: Render Image from Url
-            // Bitmap bmp = Helper.getBitmapFromBytes(bitarray);
-            // imageView.setImageBitmap(Bitmap.createScaledBitmap(bmp, bmp.getWidth(), bmp.getHeight(), false));
+        if  (itemImageUrl != null && !itemImageUrl.isEmpty() ){
+            loadImageFromFirebase(itemImageUrl,imageView);
         }
     }
 
@@ -198,16 +244,16 @@ public class AddItemActivity extends AppCompatActivity {
         StorageReference storageRef = storage.getReference();
 
         // Create a unique image name
-        String imageName = "images/" + ImageId + ".jpg";
-        StorageReference imageRef = storageRef.child(imageName);
+        String imagePath = "images/" + ImageId + ".jpg";
+        StorageReference imageRef = storageRef.child(ImageUrl);
 
         // Upload the image
         imageRef.putFile(imageUri)
                 .addOnSuccessListener(taskSnapshot -> {
                     // Get download URL
                     imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
-                        String downloadUrl = uri.toString();
-                        Log.d("Firebase", "Image URL: " + downloadUrl);
+                        ImageUrl = uri.toString();
+                        Log.d("Firebase", "Image URL: " + ImageUrl);
                     });
                 })
                 .addOnFailureListener(e -> {
@@ -221,9 +267,9 @@ public class AddItemActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
-            Uri uri = data.getData();
+            imageUri = data.getData();
             try {
-                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imageUri);
                 imageView.setImageBitmap(bitmap);
             } catch (IOException e) {
                 e.printStackTrace();
