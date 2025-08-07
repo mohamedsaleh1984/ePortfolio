@@ -168,6 +168,11 @@ public class AddItemActivity extends AppCompatActivity {
             }
         }
 
+        if(imageUri == null){
+            validationResult = new ValidationResult(true,"You need to pick product image.");
+            return validationResult;
+        }
+
         validationResult = new ValidationResult(false,"");
         return validationResult;
     }
