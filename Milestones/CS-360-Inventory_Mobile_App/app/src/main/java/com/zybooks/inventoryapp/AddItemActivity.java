@@ -108,7 +108,6 @@ public class AddItemActivity extends AppCompatActivity {
             return;
         }
 
-
         String name = edItemName.getText().toString().trim();
         int qty =  Integer.parseInt( edItemQty.getText().toString().trim());
         float price = Float.parseFloat(edItemPrice.getText().toString().trim());
@@ -197,21 +196,10 @@ public class AddItemActivity extends AppCompatActivity {
         }
     }
 
-    private void initViews(){
-        // bind item details from UI
-        imageView  = findViewById(R.id.imgViewItem);
-        edItemName = findViewById(R.id.edItemName);
-        edItemPrice = findViewById(R.id.edItemPrice);
-        edItemQty = findViewById(R.id.edItemQty);
-        btnAddEdit = findViewById(R.id.btnAddItem);
-        btnCancel = findViewById(R.id.btnCancel);
-    }
-
-
     private void uploadImageToFirebaseStorage(Uri imageUri, String ImageId) {
         // Get a reference to Firebase Storage
         FirebaseStorage storage = FirebaseStorage.getInstance();
-        StorageReference storageRef = storage.getReference();
+        storageRef = storage.getReference();
 
         // Create a unique image name
         String imagePath = "images/" + ImageId + ".jpg";
@@ -230,7 +218,6 @@ public class AddItemActivity extends AppCompatActivity {
                     Toast.makeText(this, "Upload failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
