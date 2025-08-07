@@ -22,6 +22,8 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.zybooks.inventoryapp.helper.Helper;
 import com.zybooks.inventoryapp.model.Item;
 
@@ -205,19 +207,46 @@ implements
         Item item = itemList.get(position);
         new AlertDialog.Builder(InventoryActivity.this)
                 .setTitle("Delete Item")
-                .setMessage("Are you sure you want to delete this item?")
-                .setPositiveButton("Delete", (dialog, which) -> {
-                    // TODO: DELETE ITEM
-                    boolean res =true;
-                    if(res){
-                        loadItems();
-                    }else{
-                        Helper.ToastNotify(InventoryActivity.this,"Failed to delete Item.");
-                    }
-                })
+                .setMessage("Are you sure you want to delete \"" + item.getName() + "\"?")
+                .setPositiveButton("Delete", (dialog, which) -> deleteItem(item, position))
                 .setNegativeButton("Cancel", null)
+                .setIcon(android.R.drawable.ic_dialog_alert)
                 .show();
 
+
+
+    }
+    private void deleteItem(Item item, int position) {
+        // First delete the image from Firebase Storage
+        deleteImageFromStorage(item.getImageUrl());
+
+        // Then delete the item from Firestore
+        db.collection("items").document(item.getId())
+                .delete()
+                .addOnSuccessListener(aVoid -> {
+                    // Remove item from local list and notify adapter
+                    itemList.remove(position);
+                    itemsAdapter.notifyItemRemoved(position);
+                    itemsAdapter.notifyItemRangeChanged(position, itemList.size());
+                    Toast.makeText(InventoryActivity.this, "Item deleted successfully", Toast.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(InventoryActivity.this, "Failed to delete item: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
+    }
+
+    private void deleteImageFromStorage(String imageUrl) {
+        if (imageUrl != null && !imageUrl.isEmpty()) {
+            try {
+                StorageReference imageRef = FirebaseStorage.getInstance().getReferenceFromUrl(imageUrl);
+                imageRef.delete().addOnFailureListener(e -> {
+                    // Image deletion failed, but we don't need to show error to user
+                    // as the main item deletion might still succeed
+                });
+            } catch (IllegalArgumentException e) {
+                // Invalid URL, ignore
+            }
+        }
     }
 
 
