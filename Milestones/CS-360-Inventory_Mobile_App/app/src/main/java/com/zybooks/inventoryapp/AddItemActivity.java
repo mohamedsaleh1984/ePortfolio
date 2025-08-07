@@ -17,6 +17,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -81,28 +82,34 @@ public class AddItemActivity extends AppCompatActivity {
 
 
     private void readItem(){
-        Log.wtf(TAG,"xxxxxxxxxxxxxxxxxxxxxxxx"+ ItemID);
-        DocumentReference docRef =  db.collection("items").document(ItemID);
-        if(docRef != null){
-            Log.wtf(TAG," I am not null ");
-            return;
-        }
 
+        DocumentReference docRef =  db.collection("items").document(ItemID);
         docRef.get()
-                .addOnSuccessListener(new com.google.android.gms.tasks.OnSuccessListener<DocumentSnapshot>() {
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         if (documentSnapshot.exists()) {
-                            edItemName.setText(documentSnapshot.getString("name"));
-                            edItemPrice.setText(documentSnapshot.getString("price"));
-                            edItemQty.setText(documentSnapshot.getString("qty"));
+
+                            // Log.wtf(TAG,documentSnapshot.toString());
+
+                            String id = documentSnapshot.getString("id");
+                            String name = documentSnapshot.getString("name");
+                            float price = documentSnapshot.get("price", Float.class);
+                            int quantity = documentSnapshot.get("quantity",Integer.class);
+                            String imageUrl = documentSnapshot.getString("imageUrl");
+
+
+                            ItemID = id;
+                            edItemName.setText(name);
+                            edItemPrice.setText(price+"");
+                            edItemQty.setText(quantity+"");
 
                             String itemImageUrl = documentSnapshot.getString("imageUrl");
                             if  (itemImageUrl != null && !itemImageUrl.isEmpty() ){
                                 loadImageFromFirebase(itemImageUrl,imageView);
                             }
 
-                            Log.d(TAG, "Document data: " + documentSnapshot.getData());
+
                         } else {
                             Log.d(TAG, "No such document");
                         }
@@ -114,7 +121,6 @@ public class AddItemActivity extends AppCompatActivity {
                         Log.e(TAG, "Error getting document", e);
                     }
                 });
-
 
 
     }
