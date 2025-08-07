@@ -18,6 +18,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.Blob;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -53,16 +54,13 @@ public class AddItemActivity extends AppCompatActivity {
         }
 
         if(ItemID.isEmpty()){
-
-           // uploadImageToFirebaseStorage(imageUri, ItemID);
-
             Item item =createNewItem();
 
             db.collection("items")
                     .add(item)
                     .addOnSuccessListener(documentReference -> {
                         Log.w(TAG,"ITEM SAVED....");
-                        //Helper.ToastNotify(AddItemActivity.this, "Item saved successfully");
+                        Helper.ToastNotify(AddItemActivity.this, "Item saved successfully");
 
                         finish();
                     })
@@ -94,15 +92,17 @@ public class AddItemActivity extends AppCompatActivity {
                             String name = documentSnapshot.getString("name");
                             float price = documentSnapshot.get("price", Float.class);
                             int quantity = documentSnapshot.get("quantity",Integer.class);
+                            Blob blob = documentSnapshot.getBlob("imageData");
 
                             ItemID = id;
                             edItemName.setText(name);
                             edItemPrice.setText(price+"");
                             edItemQty.setText(quantity+"");
 
-                            String itemImageUrl = documentSnapshot.getString("imageUrl");
-                            if  (itemImageUrl != null && !itemImageUrl.isEmpty() ){
-                                loadImageFromFirebase(itemImageUrl,imageView);
+                            if  (blob != null  ){
+                                byte[] byteArray = blob.toBytes();
+                                Bitmap bmp = Helper.getBitmapFromBytes(byteArray);
+                                imageView.setImageBitmap(Bitmap.createScaledBitmap(bmp, bmp.getWidth(), bmp.getHeight(), false));
                             }
 
                         } else {
@@ -116,64 +116,40 @@ public class AddItemActivity extends AppCompatActivity {
                         Log.e(TAG, "Error getting document", e);
                     }
                 });
-
-
     }
 
     private Item createNewItem(){
         String name = edItemName.getText().toString().trim();
         int qty =  Integer.parseInt( edItemQty.getText().toString().trim());
         float price = Float.parseFloat(edItemPrice.getText().toString().trim());
-        String ItemID = UUID.randomUUID().toString();
+        if(ItemID.isEmpty()){
+            ItemID = UUID.randomUUID().toString();
+        }
 
-        return  new Item(ItemID,name,qty,price,ImageUrl);
+
+        imageView.setDrawingCacheEnabled(true);
+        Bitmap bitmap = imageView.getDrawingCache();
+        byte[] imageBytes = Helper.getBytesFromBitmap(bitmap);
+
+        return  new Item(ItemID,name,qty,price,imageBytes);
     }
 
-    private void uploadImageToFirebaseStorage( String ImageId) {
-        if(filePath != null){
-            // Get a reference to Firebase Storage
-            storageRef = FirebaseHelper.getInstance().getStorageReference();
-            // Create a unique image name
-            String imagePath = "images/" + ImageId + ".jpg";
-            // Create a reference to the file you want to upload
-            StorageReference imagesRef = storageRef.child("images/" + UUID.randomUUID().toString());
 
-            imagesRef.putFile(filePath)
-                    .addOnSuccessListener(success->{
-                        imagesRef.getDownloadUrl().addOnSuccessListener(uri ->{
-                            ImageUrl= uri.toString();
-                            Toast.makeText(AddItemActivity.this, "Upload successful", Toast.LENGTH_SHORT).show();
-                        });
-                    })
-                    .addOnFailureListener(fail->{
-                        Toast.makeText(AddItemActivity.this, "Upload failed: " + fail.getMessage(), Toast.LENGTH_SHORT).show();
-                    });
-        }
-else{
-            Toast.makeText(this, "No file selected", Toast.LENGTH_SHORT).show();
-        }
-    }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
-            filePath = data.getData();
+            Uri uri = data.getData();
             try {
-                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), filePath);
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
                 imageView.setImageBitmap(bitmap);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-    }
-
-    private void loadImageFromFirebase(String imageUrl, ImageView imageView) {
-        Glide.with(this)
-                .load(imageUrl)
-                .placeholder(R.drawable.item)
-                .into(imageView);
     }
 
     /**
@@ -208,12 +184,6 @@ else{
                 return validationResult;
             }
         }
-        /*
-        if(imageUri == null){
-            validationResult = new ValidationResult(true,"You need to pick product image.");
-            return validationResult;
-        }
-        */
 
         validationResult = new ValidationResult(false,"");
         return validationResult;
@@ -270,6 +240,7 @@ else{
             }
         }
     }
+
     private void initViews(){
         // bind item details from UI
         imageView  = findViewById(R.id.imgViewItem);
@@ -280,6 +251,4 @@ else{
         btnAddEdit = findViewById(R.id.btnAddItem);
         btnCancel = findViewById(R.id.btnCancel);
     }
-
-
 }

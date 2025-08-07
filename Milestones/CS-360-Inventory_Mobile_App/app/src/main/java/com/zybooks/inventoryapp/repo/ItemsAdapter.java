@@ -59,14 +59,11 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.InventoryVie
         holder.quantityTextView.setText("Qty: " + item.getQuantity());
         holder.tvItemID.setText(String.valueOf(item.getId()));
 
-        String imageUrl  = item.getImageUrl();
-        if (imageUrl != null && !imageUrl.isEmpty()) {
-            /*
-            //TODO: Render Image
+        byte[] bitarray = item.getImage();
+        if (bitarray != null && bitarray.length > 0) {
             Bitmap bmp = Helper.getBitmapFromBytes(bitarray);
             holder.imgView.setImageBitmap(Bitmap.createScaledBitmap(
                     bmp, bmp.getWidth(), bmp.getHeight(), false));
-            */
         } else {
             holder.imgView.setImageDrawable(null); // Clear image if no data
         }
@@ -104,6 +101,7 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.InventoryVie
             priceTextView = itemView.findViewById(R.id.item_price);
             tvItemID = itemView.findViewById(R.id.tvItemID);
             imgView = itemView.findViewById(R.id.item_image);
+
             btnDelete = itemView.findViewById(R.id.btnDeleteItem);
         }
     }

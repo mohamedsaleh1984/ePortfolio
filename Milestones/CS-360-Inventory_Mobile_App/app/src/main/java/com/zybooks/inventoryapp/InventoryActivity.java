@@ -96,9 +96,6 @@ implements
     }
 
     void loadItems(){
-
-        String currentUserId = FirebaseHelper.getInstance().getCurrentUserId();
-
         db.collection("items")
                 .orderBy("createdAt", Query.Direction.DESCENDING)
                 .addSnapshotListener((value, error) -> {
@@ -116,9 +113,6 @@ implements
                     }
                     itemsAdapter.notifyDataSetChanged();
                 });
-
-
-
     }
 
     private void  initViews(){
@@ -141,7 +135,6 @@ implements
             itemsAdapter.setFilteredList(filteredList);
         }
     }
-
     private void showPermissionDialog() {
         new AlertDialog.Builder(this)
                 .setTitle("SMS Permission Needed")
@@ -163,7 +156,6 @@ implements
                 .setCancelable(false)
                 .show();
     }
-
     private void checkAndRequestSmsPermission() {
         int selfPermission = ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS);
         if (selfPermission != PackageManager.PERMISSION_GRANTED) {
@@ -225,15 +217,9 @@ implements
                 .setNegativeButton("Cancel", null)
                 .setIcon(android.R.drawable.ic_dialog_alert)
                 .show();
-
-
-
     }
-    private void deleteItem(Item item, int position) {
-        // First delete the image from Firebase Storage
-        deleteImageFromStorage(item.getImageUrl());
 
-        // Then delete the item from Firestore
+    private void deleteItem(Item item, int position) {
         db.collection("items").document(item.getId())
                 .delete()
                 .addOnSuccessListener(aVoid -> {
@@ -247,21 +233,6 @@ implements
                     Toast.makeText(InventoryActivity.this, "Failed to delete item: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
-
-    private void deleteImageFromStorage(String imageUrl) {
-        if (imageUrl != null && !imageUrl.isEmpty()) {
-            try {
-                StorageReference imageRef = FirebaseStorage.getInstance().getReferenceFromUrl(imageUrl);
-                imageRef.delete().addOnFailureListener(e -> {
-                    // Image deletion failed, but we don't need to show error to user
-                    // as the main item deletion might still succeed
-                });
-            } catch (IllegalArgumentException e) {
-                // Invalid URL, ignore
-            }
-        }
-    }
-
 
     @Override
     protected void onResume(){
