@@ -15,7 +15,9 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.bumptech.glide.Glide;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.zybooks.inventoryapp.helper.Helper;
 import com.zybooks.inventoryapp.model.Item;
@@ -33,7 +35,7 @@ public class AddItemActivity extends AppCompatActivity {
     private Button btnAddEdit,btnCancel;
     private ValidationResult validationResult;
     private String ItemID = "";
-    private Uri selectedImageUri;
+    private Uri imageUri= null;
     private FirebaseFirestore db;
     private StorageReference storageRef;
 
@@ -91,12 +93,17 @@ public class AddItemActivity extends AppCompatActivity {
 
 
     void createUpdateItem(){
+
+        ValidationResult validation_result = validatesSaveItem();
+        if(validation_result.hasError()){
+            Helper.ToastNotify(AddItemActivity.this,validation_result.getErrorMessage());
+            return;
+        }
+
+
         String name = edItemName.getText().toString().trim();
-        int qty =  Integer.parseInt( edItemQty.getText().toString());
-        float price = Float.parseFloat(edItemPrice.getText().toString());
-
-        boolean result = false;
-
+        int qty =  Integer.parseInt( edItemQty.getText().toString().trim());
+        float price = Float.parseFloat(edItemPrice.getText().toString().trim());
 
         if(ItemID.isEmpty()){
             Item item = new Item(name,qty,price,"");
@@ -181,7 +188,33 @@ public class AddItemActivity extends AppCompatActivity {
         edItemPrice = findViewById(R.id.edItemPrice);
         edItemQty = findViewById(R.id.edItemQty);
         btnAddEdit = findViewById(R.id.btnAddItem);
+        btnCancel = findViewById(R.id.btnCancel);
     }
+
+
+    private void uploadImageToFirebaseStorage(Uri imageUri, String ImageId) {
+        // Get a reference to Firebase Storage
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference storageRef = storage.getReference();
+
+        // Create a unique image name
+        String imageName = "images/" + ImageId + ".jpg";
+        StorageReference imageRef = storageRef.child(imageName);
+
+        // Upload the image
+        imageRef.putFile(imageUri)
+                .addOnSuccessListener(taskSnapshot -> {
+                    // Get download URL
+                    imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                        String downloadUrl = uri.toString();
+                        Log.d("Firebase", "Image URL: " + downloadUrl);
+                    });
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Upload failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
+    }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -196,5 +229,12 @@ public class AddItemActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
+    }
+
+    private void loadImageFromFirebase(String imageUrl, ImageView imageView) {
+        Glide.with(this)
+                .load(imageUrl)
+                .placeholder(R.drawable.item)
+                .into(imageView);
     }
 }
