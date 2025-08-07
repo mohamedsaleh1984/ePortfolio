@@ -51,45 +51,7 @@ public class AddItemActivity extends AppCompatActivity {
         db = FirebaseHelper.getInstance().getFirestore();
         storageRef = FirebaseHelper.getInstance().getStorageReference();
 
-
-
-        btnAddEdit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                createUpdateItem();
-                finish();
-            }
-        });
-
-        btnCancel = findViewById(R.id.btnCancel);
-        btnCancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // place holder
-                finish();
-            }
-        });
-
-        imageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                selectImage();
-            }
-        });
-
-
-
-        Intent intent = getIntent();
-        String strItemID = intent.getStringExtra("InventoryActivity.ItemID");
-
-        if(strItemID != null && !strItemID.isEmpty()){
-            try {
-                readItem();
-            }catch (Exception ex){
-                Log.w("EXC","Failed to cast.");
-            }
-        }
-
+        evtHandlers();
     }
     private void initViews(){
         // bind item details from UI
