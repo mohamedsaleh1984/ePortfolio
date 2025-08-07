@@ -13,8 +13,8 @@ public class Item {
     public Item(){
     }
 
-    public Item( String name, int quantity, float price,String url) {
-        this.id = UUID.randomUUID().toString();
+    public Item( String id, String name, int quantity, float price,String url) {
+        this.id=id;
         this.name = name;
         this.quantity = quantity;
         this.price = price;
