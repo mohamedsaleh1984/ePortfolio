@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.SearchView;
@@ -44,6 +45,7 @@ implements
     private RecyclerView recyclerView;
     private FirebaseFirestore db;
     private FloatingActionButton btnSendSms,btnAddItem;
+    private String TAG = "MOE";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

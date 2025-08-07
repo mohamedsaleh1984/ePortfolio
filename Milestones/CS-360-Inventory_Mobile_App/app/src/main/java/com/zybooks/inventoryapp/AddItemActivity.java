@@ -12,13 +12,17 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.rpc.Help;
 import com.zybooks.inventoryapp.helper.Helper;
 import com.zybooks.inventoryapp.model.Item;
 import com.zybooks.inventoryapp.model.ValidationResult;
@@ -29,76 +33,15 @@ import java.util.UUID;
 
 public class AddItemActivity extends AppCompatActivity {
     private static final int PICK_IMAGE_REQUEST = 1;
+    private static final  String TAG="MOE";
     private ImageView imageView;
     private EditText edItemName,edItemQty,edItemPrice;
-
     private Button btnAddEdit,btnCancel;
     private ValidationResult validationResult;
-    private String ItemID = "";
-    private Uri imageUri= null;
-    private  String ImageUrl="";
+    private String ItemID = "",ImageUrl="";
+    private Uri filePath= null;
     private FirebaseFirestore db;
     private StorageReference storageRef;
-
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_item);
-
-        initViews();
-
-        db = FirebaseHelper.getInstance().getFirestore();
-        storageRef = FirebaseHelper.getInstance().getStorageReference();
-
-        evtHandlers();
-    }
-    private void initViews(){
-        // bind item details from UI
-        imageView  = findViewById(R.id.imgViewItem);
-        edItemName = findViewById(R.id.edItemName);
-        edItemPrice = findViewById(R.id.edItemPrice);
-        edItemQty = findViewById(R.id.edItemQty);
-
-        btnAddEdit = findViewById(R.id.btnAddItem);
-        btnCancel = findViewById(R.id.btnCancel);
-    }
-    private  void evtHandlers(){
-        btnAddEdit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                createUpdateItem();
-
-            }
-        });
-
-        btnCancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // place holder
-                finish();
-            }
-        });
-
-        imageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                selectImage();
-            }
-        });
-
-        Intent intent = getIntent();
-        String strItemID = intent.getStringExtra("InventoryActivity.ItemID");
-
-        if(strItemID != null && !strItemID.isEmpty()){
-            try {
-                readItem();
-            }catch (Exception ex){
-                Log.w("EXC","Failed to cast.");
-            }
-        }
-
-    }
 
     private void createUpdateItem(){
 
@@ -108,30 +51,128 @@ public class AddItemActivity extends AppCompatActivity {
             return;
         }
 
-        String name = edItemName.getText().toString().trim();
-        int qty =  Integer.parseInt( edItemQty.getText().toString().trim());
-        float price = Float.parseFloat(edItemPrice.getText().toString().trim());
-
         if(ItemID.isEmpty()){
-            String ItemID = UUID.randomUUID().toString();
+
            // uploadImageToFirebaseStorage(imageUri, ItemID);
 
-            Item item = new Item(ItemID,name,qty,price,ImageUrl);
+            Item item =createNewItem();
+
             db.collection("items")
                     .add(item)
                     .addOnSuccessListener(documentReference -> {
-                        Helper.ToastNotify(AddItemActivity.this, "Item saved successfully");
+                        Log.w(TAG,"ITEM SAVED....");
+                        //Helper.ToastNotify(AddItemActivity.this, "Item saved successfully");
+
                         finish();
                     })
                     .addOnFailureListener(e -> {
                         Helper.ToastNotify(AddItemActivity.this, "Failed to save item");
+                        Log.w(TAG,"ITEM NOT SAVED....");
                     });
+
         }
         else{
             //TODO: Update Item
         }
 
 
+    }
+
+
+
+    private void readItem(){
+        Log.wtf(TAG,"xxxxxxxxxxxxxxxxxxxxxxxx"+ ItemID);
+        DocumentReference docRef =  db.collection("items").document(ItemID);
+        if(docRef != null){
+            Log.wtf(TAG," I am not null ");
+            return;
+        }
+
+        docRef.get()
+                .addOnSuccessListener(new com.google.android.gms.tasks.OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        if (documentSnapshot.exists()) {
+                            edItemName.setText(documentSnapshot.getString("name"));
+                            edItemPrice.setText(documentSnapshot.getString("price"));
+                            edItemQty.setText(documentSnapshot.getString("qty"));
+
+                            String itemImageUrl = documentSnapshot.getString("imageUrl");
+                            if  (itemImageUrl != null && !itemImageUrl.isEmpty() ){
+                                loadImageFromFirebase(itemImageUrl,imageView);
+                            }
+
+                            Log.d(TAG, "Document data: " + documentSnapshot.getData());
+                        } else {
+                            Log.d(TAG, "No such document");
+                        }
+                    }
+                })
+                .addOnFailureListener(new com.google.android.gms.tasks.OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.e(TAG, "Error getting document", e);
+                    }
+                });
+
+
+
+    }
+
+    private Item createNewItem(){
+        String name = edItemName.getText().toString().trim();
+        int qty =  Integer.parseInt( edItemQty.getText().toString().trim());
+        float price = Float.parseFloat(edItemPrice.getText().toString().trim());
+        String ItemID = UUID.randomUUID().toString();
+
+        return  new Item(ItemID,name,qty,price,ImageUrl);
+    }
+
+    private void uploadImageToFirebaseStorage( String ImageId) {
+        if(filePath != null){
+            // Get a reference to Firebase Storage
+            storageRef = FirebaseHelper.getInstance().getStorageReference();
+            // Create a unique image name
+            String imagePath = "images/" + ImageId + ".jpg";
+            // Create a reference to the file you want to upload
+            StorageReference imagesRef = storageRef.child("images/" + UUID.randomUUID().toString());
+
+            imagesRef.putFile(filePath)
+                    .addOnSuccessListener(success->{
+                        imagesRef.getDownloadUrl().addOnSuccessListener(uri ->{
+                            ImageUrl= uri.toString();
+                            Toast.makeText(AddItemActivity.this, "Upload successful", Toast.LENGTH_SHORT).show();
+                        });
+                    })
+                    .addOnFailureListener(fail->{
+                        Toast.makeText(AddItemActivity.this, "Upload failed: " + fail.getMessage(), Toast.LENGTH_SHORT).show();
+                    });
+        }
+else{
+            Toast.makeText(this, "No file selected", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
+            filePath = data.getData();
+            try {
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), filePath);
+                imageView.setImageBitmap(bitmap);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void loadImageFromFirebase(String imageUrl, ImageView imageView) {
+        Glide.with(this)
+                .load(imageUrl)
+                .placeholder(R.drawable.item)
+                .into(imageView);
     }
 
     /**
@@ -184,61 +225,60 @@ public class AddItemActivity extends AppCompatActivity {
         startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
     }
 
-    private void readItem(){
-        Item item = new Item();
-        edItemName.setText(item.getName());
-        edItemPrice.setText(String.valueOf(item.getPrice()));
-        edItemQty.setText(String.valueOf(item.getQuantity()));
-
-        String itemImageUrl = item.getImageUrl();
-
-        if  (itemImageUrl != null && !itemImageUrl.isEmpty() ){
-            loadImageFromFirebase(itemImageUrl,imageView);
-        }
-    }
-
-    private void uploadImageToFirebaseStorage(Uri imageUri, String ImageId) {
-        // Get a reference to Firebase Storage
-        FirebaseStorage storage = FirebaseStorage.getInstance();
-        storageRef = storage.getReference();
-
-        // Create a unique image name
-        String imagePath = "images/" + ImageId + ".jpg";
-        StorageReference imageRef = storageRef.child(ImageUrl);
-
-        // Upload the image
-        imageRef.putFile(imageUri)
-                .addOnSuccessListener(taskSnapshot -> {
-                    // Get download URL
-                    imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
-                        ImageUrl = uri.toString();
-                        Log.d("Firebase", "Image URL: " + ImageUrl);
-                    });
-                })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(this, "Upload failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                });
-    }
-
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_add_item);
 
-        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
-            imageUri = data.getData();
+        initViews();
+
+        db = FirebaseHelper.getInstance().getFirestore();
+        storageRef = FirebaseHelper.getInstance().getStorageReference();
+
+        btnAddEdit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                createUpdateItem();
+
+            }
+        });
+
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // place holder
+                finish();
+            }
+        });
+
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                selectImage();
+            }
+        });
+
+        Intent intent = getIntent();
+        ItemID = intent.getStringExtra("InventoryActivity.ItemID");
+
+        if(ItemID != null && !ItemID.isEmpty()){
             try {
-                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imageUri);
-                imageView.setImageBitmap(bitmap);
-            } catch (IOException e) {
-                e.printStackTrace();
+                readItem();
+            }catch (Exception ex){
+                Log.w("EXC","Failed to cast.");
             }
         }
     }
+    private void initViews(){
+        // bind item details from UI
+        imageView  = findViewById(R.id.imgViewItem);
+        edItemName = findViewById(R.id.edItemName);
+        edItemPrice = findViewById(R.id.edItemPrice);
+        edItemQty = findViewById(R.id.edItemQty);
 
-    private void loadImageFromFirebase(String imageUrl, ImageView imageView) {
-        Glide.with(this)
-                .load(imageUrl)
-                .placeholder(R.drawable.item)
-                .into(imageView);
+        btnAddEdit = findViewById(R.id.btnAddItem);
+        btnCancel = findViewById(R.id.btnCancel);
     }
+
+
 }
