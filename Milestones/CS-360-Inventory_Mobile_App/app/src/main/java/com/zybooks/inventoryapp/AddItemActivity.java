@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -22,6 +23,7 @@ import com.zybooks.inventoryapp.model.ValidationResult;
 import com.zybooks.inventoryapp.utils.FirebaseHelper;
 
 import java.io.IOException;
+import java.util.UUID;
 
 public class AddItemActivity extends AppCompatActivity {
     private static final int PICK_IMAGE_REQUEST = 1;
@@ -89,28 +91,30 @@ public class AddItemActivity extends AppCompatActivity {
 
 
     void createUpdateItem(){
-        String name = edItemName.getText().toString();
-        imageView.setDrawingCacheEnabled(true);
-        Bitmap bitmap = imageView.getDrawingCache();
-        byte[] imageBytes = Helper.getBytesFromBitmap(bitmap);
+        String name = edItemName.getText().toString().trim();
         int qty =  Integer.parseInt( edItemQty.getText().toString());
         float price = Float.parseFloat(edItemPrice.getText().toString());
+
         boolean result = false;
 
+
         if(ItemID.isEmpty()){
-            //TODO: Create New Item
+            Item item = new Item(name,qty,price,"");
+            db.collection("items")
+                    .add(item)
+                    .addOnSuccessListener(documentReference -> {
+                        Helper.ToastNotify(AddItemActivity.this, "Item saved successfully");
+                        finish();
+                    })
+                    .addOnFailureListener(e -> {
+                        Helper.ToastNotify(AddItemActivity.this, "Failed to save item");
+                    });
         }
         else{
             //TODO: Update Item
         }
 
-        //TODO: Proper Check
-        if(result){
-            Helper.ToastNotify(AddItemActivity.this,"Item Created/Updated Successfully.");
-        }
-        else {
-            Helper.ToastNotify(AddItemActivity.this,"Failed to save/update item.");
-        }
+
     }
 
     /**
@@ -178,7 +182,6 @@ public class AddItemActivity extends AppCompatActivity {
         edItemQty = findViewById(R.id.edItemQty);
         btnAddEdit = findViewById(R.id.btnAddItem);
     }
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
