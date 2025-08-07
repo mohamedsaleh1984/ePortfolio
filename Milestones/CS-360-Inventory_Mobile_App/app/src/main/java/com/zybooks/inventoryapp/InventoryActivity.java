@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.SearchView;
 import android.widget.Toast;
 
@@ -18,10 +19,14 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.zybooks.inventoryapp.helper.Helper;
 import com.zybooks.inventoryapp.model.Item;
 
 import com.zybooks.inventoryapp.repo.ItemsAdapter;
+import com.zybooks.inventoryapp.utils.FirebaseHelper;
 
 import java.util.ArrayList;
 
@@ -31,17 +36,19 @@ implements
         ItemsAdapter.OnItemClickListener
 {
     private static final int SMS_PERMISSION_REQUEST_CODE = 100;
-    private ArrayList<Item> itemsList;
+    private ArrayList<Item> itemList;
     private  SearchView searchView;
     private ItemsAdapter itemsAdapter;
+    private FirebaseFirestore db;
+    private FloatingActionButton btnSendSms,btnAddItem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_inventory);
 
-        searchView = findViewById(R.id.searchView);
-        searchView.clearFocus();
+        initViews();
+
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -55,22 +62,6 @@ implements
             }
         });
 
-        refreshData();
-    }
-
-    void refreshData(){
-
-        // TODO: Fetch Data from Firebase.
-        itemsList =  new ArrayList<>();
-
-        itemsAdapter = new ItemsAdapter(this, itemsList, this, this);
-        RecyclerView recyclerView = findViewById(R.id.recyclerView);
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(itemsAdapter);
-
-        // Add New Item
-        FloatingActionButton btnAddItem = findViewById(R.id.addButton);
         btnAddItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -80,19 +71,51 @@ implements
             }
         });
 
-        // Send SMS
-        FloatingActionButton btnSendSms = findViewById(R.id.btnSendSms);
         btnSendSms.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 checkAndRequestSmsPermission();
             }
         });
+        
+        loadItems();
     }
 
+    void loadItems(){
+
+        String currentUserId = FirebaseHelper.getInstance().getCurrentUserId();
+
+        db.collection("items")
+                .orderBy("createdAt", Query.Direction.DESCENDING)
+                .addSnapshotListener((value, error) -> {
+
+                    if (error != null) {
+                        Toast.makeText(InventoryActivity.this, "Error loading items", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    itemList.clear();
+                    for (QueryDocumentSnapshot doc : value) {
+                        Item item = doc.toObject(Item.class);
+                        item.setId(doc.getId());
+                        itemList.add(item);
+                    }
+                    itemsAdapter.notifyDataSetChanged();
+                });
+
+
+
+    }
+
+    private void  initViews(){
+        btnSendSms = findViewById(R.id.btnSendSms);
+        btnAddItem = findViewById(R.id.addButton);
+        searchView = findViewById(R.id.searchView);
+        searchView.clearFocus();
+    }
     private void filterList(String text){
         ArrayList<Item>  filteredList = new ArrayList<>();
-        for(Item item:itemsList){
+        for(Item item:itemList){
             if(item.getName().toLowerCase().contains(text.toLowerCase())){
                 filteredList.add(item);
             }
@@ -171,7 +194,7 @@ implements
 
     @Override
     public void onItemClick(int position) {
-        Item item = itemsList.get(position);
+        Item item = itemList.get(position);
         Intent intent = new Intent(InventoryActivity.this, AddItemActivity.class);
         intent.putExtra("InventoryActivity.ItemID",String.valueOf(item.getId()));
         startActivity(intent);
@@ -179,7 +202,7 @@ implements
 
     @Override
     public void onItemDeleteButtonClick(int position) {
-        Item item = itemsList.get(position);
+        Item item = itemList.get(position);
         new AlertDialog.Builder(InventoryActivity.this)
                 .setTitle("Delete Item")
                 .setMessage("Are you sure you want to delete this item?")
@@ -187,7 +210,7 @@ implements
                     // TODO: DELETE ITEM
                     boolean res =true;
                     if(res){
-                        refreshData();
+                        loadItems();
                     }else{
                         Helper.ToastNotify(InventoryActivity.this,"Failed to delete Item.");
                     }
@@ -201,6 +224,6 @@ implements
     @Override
     protected void onResume(){
         super.onResume();
-        refreshData();
+        loadItems();
     }
 }

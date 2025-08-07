@@ -34,5 +34,8 @@ public class Item {
         return  price;
     }
     public long getCreatedAt() { return createdAt; }
+    public void setId(String id){
+        this.id=id;
+    }
     public void setCreatedAt(long createdAt) { this.createdAt = createdAt; }
 }
