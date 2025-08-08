@@ -2,6 +2,8 @@ package com.zybooks.inventoryapp.repo;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.util.Base64;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,31 +16,23 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.zybooks.inventoryapp.R;
 import com.zybooks.inventoryapp.helper.Helper;
-import com.zybooks.inventoryapp.model.InventoryItem;
+import com.zybooks.inventoryapp.model.Item;
 
 import java.util.ArrayList;
 
 public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.InventoryViewHolder> {
 
     private final Context context;
-    private   ArrayList<InventoryItem> inventoryItems;
     private final OnDeleteItemButtonClickListener deleteButtonClickListener;
     private final OnItemClickListener itemClickListener;
-
-    public interface OnDeleteItemButtonClickListener {
-        void onItemDeleteButtonClick(int position);
-    }
-
-    public interface OnItemClickListener {
-        void onItemClick(int position);
-    }
+    private ArrayList<Item> items;
 
     public ItemsAdapter(Context context,
-                            ArrayList<InventoryItem> inventoryItems,
-                            OnDeleteItemButtonClickListener deleteListener,
-                            OnItemClickListener itemListener) {
+                        ArrayList<Item> items,
+                        OnDeleteItemButtonClickListener deleteListener,
+                        OnItemClickListener itemListener) {
         this.context = context;
-        this.inventoryItems = inventoryItems;
+        this.items = items;
         this.deleteButtonClickListener = deleteListener;
         this.itemClickListener = itemListener;
     }
@@ -52,18 +46,18 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.InventoryVie
 
     @Override
     public void onBindViewHolder(@NonNull InventoryViewHolder holder, int position) {
-        InventoryItem item = inventoryItems.get(position);
+        Item item = items.get(position);
+        Log.wtf("MOE", "onBindViewHolder => " + item.toString());
 
         holder.nameTextView.setText(item.getName());
-        holder.priceTextView.setText("Price: " + item.getPrice());
-        holder.quantityTextView.setText("Qty: " + item.getQuantity());
-        holder.tvItemID.setText(String.valueOf(item.getId()));
+        holder.priceTextView.setText(String.format("Price: %s", item.getPrice()));
+        holder.quantityTextView.setText(String.format("Qty: %d", item.getQuantity()));
+        holder.tvItemID.setText(item.getId());
 
-        byte[] bitarray = item.getImage();
-        if (bitarray != null && bitarray.length > 0) {
-            Bitmap bmp = Helper.getBitmapFromBytes(bitarray);
-            holder.imgView.setImageBitmap(Bitmap.createScaledBitmap(
-                    bmp, bmp.getWidth(), bmp.getHeight(), false));
+        if (item.getImageBase64() != null && !item.getImageBase64().isEmpty()) {
+            byte[] bytes = Base64.decode(item.getImageBase64(), Base64.DEFAULT);
+            Bitmap bmp = Helper.getBitmapFromBytes(bytes);
+            holder.imgView.setImageBitmap(Bitmap.createScaledBitmap(bmp, bmp.getWidth(), bmp.getHeight(), false));
         } else {
             holder.imgView.setImageDrawable(null); // Clear image if no data
         }
@@ -83,12 +77,21 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.InventoryVie
 
     @Override
     public int getItemCount() {
-        return inventoryItems.size();
+        return items.size();
     }
 
-    public void setFilteredList(ArrayList<InventoryItem> items){
-        this.inventoryItems = items;
+    public void setFilteredList(ArrayList<Item> items) {
+        this.items = items;
     }
+
+    public interface OnDeleteItemButtonClickListener {
+        void onItemDeleteButtonClick(int position);
+    }
+
+    public interface OnItemClickListener {
+        void onItemClick(int position);
+    }
+
     public static class InventoryViewHolder extends RecyclerView.ViewHolder {
         TextView nameTextView, quantityTextView, priceTextView, tvItemID;
         ImageView imgView;
@@ -101,6 +104,7 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.InventoryVie
             priceTextView = itemView.findViewById(R.id.item_price);
             tvItemID = itemView.findViewById(R.id.tvItemID);
             imgView = itemView.findViewById(R.id.item_image);
+
             btnDelete = itemView.findViewById(R.id.btnDeleteItem);
         }
     }

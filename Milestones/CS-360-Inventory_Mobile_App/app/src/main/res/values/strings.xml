@@ -2,7 +2,7 @@
     <string name="app_name">InventoryApp</string>
     <string name="login">Login</string>
     <string name="inventory_wizard">Inventory Wizard</string>
-    <string name="username">Please enter your username</string>
+    <string name="emailaddress">Please enter your email address</string>
     <string name="password">Please enter your password</string>
     <string name="reenter">Please re-enter your password</string>
     <string name="register">Register</string>
@@ -17,7 +17,7 @@
     <string name="click_the_button_to_request_sms_permission">Click the button to request SMS permission</string>
     <string name="notification_message">Inventory Wizard needs to send SMS messages. Please grant this permission.</string>
     <string name="create">Create Account</string>
-    <string name="cancel">Cancel</string>
+    <string name="cancel">Return</string>
     <string name="please_enter_item_quantity">Please enter Item Quantity</string>
     <string name="add_item">Add/Update Item</string>
     <string name="price">Price</string>

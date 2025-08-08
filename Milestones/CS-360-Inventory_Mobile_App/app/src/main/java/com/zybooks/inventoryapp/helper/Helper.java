@@ -5,10 +5,12 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.view.View;
 import android.widget.Toast;
+
 import com.google.android.material.snackbar.Snackbar;
 
 import java.io.ByteArrayOutputStream;
 
+//TODO: Add Comments
 public class Helper {
     // Convert Bitmap to byte array
     public static byte[] getBytesFromBitmap(Bitmap bitmap) {
@@ -23,15 +25,13 @@ public class Helper {
     }
 
     // Notify the user
-    public static void ToastNotify(Context context, String message){
+    public static void ToastNotify(Context context, String message) {
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
     }
 
-    public static void SnackbarNotify(View view, String message){
+    public static void SnackbarNotify(View view, String message) {
         Snackbar.make(view, message, Snackbar.LENGTH_LONG).show();
     }
-
-
 
 
 }
