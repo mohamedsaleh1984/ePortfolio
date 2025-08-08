@@ -1,5 +1,6 @@
 package com.zybooks.inventoryapp;
 
+import android.content.ClipData;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -31,76 +32,98 @@ import com.zybooks.inventoryapp.model.ValidationResult;
 import com.zybooks.inventoryapp.utils.FirebaseHelper;
 
 import java.io.IOException;
+import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 public class AddItemActivity extends AppCompatActivity {
     private static final int PICK_IMAGE_REQUEST = 1;
-    private static final  String TAG="MOE";
+    private static final String TAG = "MOE";
     private ImageView imageView;
-    private EditText edItemName,edItemQty,edItemPrice;
-    private Button btnAddEdit,btnCancel;
-    private ValidationResult validationResult;
-    private String ItemID = "",ImageUrl="";
-    private Uri filePath= null;
+    private EditText edItemName, edItemQty, edItemPrice;
+    private Button btnAddEdit, btnCancel;
+    private String ItemID = "";
     private FirebaseFirestore db;
-    private StorageReference storageRef;
 
-    private void createUpdateItem(){
+    private void createUpdateItem() {
+        log("createUpdateItem");
 
         ValidationResult validation_result = validatesSaveItem();
-        if(validation_result.hasError()){
-            Helper.ToastNotify(AddItemActivity.this,validation_result.getErrorMessage());
+        if (validation_result.hasError()) {
+            Helper.ToastNotify(AddItemActivity.this, validation_result.getErrorMessage());
             return;
         }
 
-        if(ItemID.isEmpty()){
-            Item item =createNewItem();
+        log("Passed Validation...");
+        log("ItemID => " + ItemID);
+        if (ItemID == null || ItemID.isEmpty()) {
+            log("ItemID.isEmpty()");
+            Item item = createNewItem();
+            log("Item Created");
 
             db.collection("items")
                     .add(item)
                     .addOnSuccessListener(documentReference -> {
-                        Log.w(TAG,"ITEM SAVED....");
-                        Helper.ToastNotify(AddItemActivity.this, "Item saved successfully");
 
+                        Helper.ToastNotify(AddItemActivity.this, "Item saved successfully");
+                        log("Item Saved...");
                         finish();
+                        log("Close activity...");
                     })
                     .addOnFailureListener(e -> {
                         Helper.ToastNotify(AddItemActivity.this, "Failed to save item");
-                        Log.w(TAG,"ITEM NOT SAVED....");
+                        log("Item Not Saved");
                     });
-
-        }
-        else{
+            finish();
+        } else {
             //TODO: Update Item
+            log("Update Item...");
+            Item item = createNewItem();
+
+            DocumentReference docRef = db.collection("items").document(ItemID);
+
+            Map<String, Object> updates = new HashMap<>();
+            updates.put("id", item.getId());
+            updates.put("name", item.getName());
+            updates.put("price", item.getPrice());
+            updates.put("quantity", item.getQuantity());
+            updates.put("imageBase64", item.getImageBase64());
+            docRef.update(updates).addOnSuccessListener(success->{
+                Helper.ToastNotify(AddItemActivity.this, "Item saved successfully");
+                finish();
+            }).addOnFailureListener(fail ->{
+                Helper.ToastNotify(AddItemActivity.this, "Failed to save item");
+                finish();
+            });
+
         }
-
-
     }
 
-
-
-    private void readItem(){
-
-        DocumentReference docRef =  db.collection("items").document(ItemID);
+    private void readItem() {
+        log("readItem");
+        DocumentReference docRef = db.collection("items").document(ItemID);
         docRef.get()
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         if (documentSnapshot.exists()) {
 
+                            log(documentSnapshot.toString());
+
                             String id = documentSnapshot.getString("id");
                             String name = documentSnapshot.getString("name");
                             float price = documentSnapshot.get("price", Float.class);
-                            int quantity = documentSnapshot.get("quantity",Integer.class);
-                            Blob blob = documentSnapshot.getBlob("imageData");
+                            int quantity = documentSnapshot.get("quantity", Integer.class);
+                            String image64 = documentSnapshot.getString("imageBase64");
 
                             ItemID = id;
                             edItemName.setText(name);
-                            edItemPrice.setText(price+"");
-                            edItemQty.setText(quantity+"");
+                            edItemPrice.setText(price + "");
+                            edItemQty.setText(quantity + "");
 
-                            if  (blob != null  ){
-                                byte[] byteArray = blob.toBytes();
+                            if (image64 != null && image64.length() > 0) {
+                                byte[] byteArray = android.util.Base64.decode(image64, android.util.Base64.DEFAULT);
                                 Bitmap bmp = Helper.getBitmapFromBytes(byteArray);
                                 imageView.setImageBitmap(Bitmap.createScaledBitmap(bmp, bmp.getWidth(), bmp.getHeight(), false));
                             }
@@ -118,24 +141,34 @@ public class AddItemActivity extends AppCompatActivity {
                 });
     }
 
-    private Item createNewItem(){
+    private Item createNewItem() {
+        log("before");
         String name = edItemName.getText().toString().trim();
-        int qty =  Integer.parseInt( edItemQty.getText().toString().trim());
+        int qty = Integer.parseInt(edItemQty.getText().toString().trim());
         float price = Float.parseFloat(edItemPrice.getText().toString().trim());
-        if(ItemID.isEmpty()){
+
+        if (ItemID == null || ItemID.isEmpty()) {
             ItemID = UUID.randomUUID().toString();
         }
 
+        String base64 = "";
 
         imageView.setDrawingCacheEnabled(true);
         Bitmap bitmap = imageView.getDrawingCache();
         byte[] imageBytes = Helper.getBytesFromBitmap(bitmap);
 
-        return  new Item(ItemID,name,qty,price,imageBytes);
+        if(imageBytes != null &&  imageBytes.length>0){
+            base64 = Base64.getEncoder().encodeToString(imageBytes);
+        }
+        Item itemToReturn = new Item(ItemID, name, qty, price, base64);
+        log("Item Created "+ itemToReturn);
+
+        return itemToReturn;
     }
 
-
-
+    private void log(String message) {
+        Log.wtf(TAG, message);
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -154,38 +187,39 @@ public class AddItemActivity extends AppCompatActivity {
 
     /**
      * Validate given data before saving Item
-     * */
-    private ValidationResult validatesSaveItem(){
-        if(edItemName.getText().toString().isBlank() || edItemName.getText().toString().isEmpty()){
-            validationResult = new ValidationResult(true,"Name can't be empty.");
+     */
+    private ValidationResult validatesSaveItem() {
+        ValidationResult validationResult;
+        if (edItemName.getText().toString().isBlank() || edItemName.getText().toString().isEmpty()) {
+            validationResult = new ValidationResult(true, "Name can't be empty.");
             return validationResult;
         }
 
-        if(edItemPrice.getText().toString().isBlank() || edItemPrice.getText().toString().isEmpty()){
-            validationResult = new ValidationResult(true,"Price can't be empty.");
+        if (edItemPrice.getText().toString().isBlank() || edItemPrice.getText().toString().isEmpty()) {
+            validationResult = new ValidationResult(true, "Price can't be empty.");
             return validationResult;
         }
 
-        if( Float.parseFloat(edItemPrice.getText().toString()) <= 0){
-            validationResult = new ValidationResult(true,"Price can't be negative or zero.");
+        if (Float.parseFloat(edItemPrice.getText().toString()) <= 0) {
+            validationResult = new ValidationResult(true, "Price can't be negative or zero.");
             return validationResult;
         }
 
-        if(edItemQty.getText().toString().isBlank() || edItemQty.getText().toString().isEmpty()){
-            validationResult = new ValidationResult(true,"Qty can't be empty.");
+        if (edItemQty.getText().toString().isBlank() || edItemQty.getText().toString().isEmpty()) {
+            validationResult = new ValidationResult(true, "Qty can't be empty.");
             return validationResult;
         }
 
-        if( edItemQty.getText() != null){
+        if (edItemQty.getText() != null) {
             int qty = Integer.parseInt(edItemQty.getText().toString().trim());
 
-            if(qty <= 0){
-                validationResult = new ValidationResult(true,"Qty can't be negative or zero.");
+            if (qty <= 0) {
+                validationResult = new ValidationResult(true, "Qty can't be negative or zero.");
                 return validationResult;
             }
         }
 
-        validationResult = new ValidationResult(false,"");
+        validationResult = new ValidationResult(false, "");
         return validationResult;
     }
 
@@ -204,7 +238,6 @@ public class AddItemActivity extends AppCompatActivity {
         initViews();
 
         db = FirebaseHelper.getInstance().getFirestore();
-        storageRef = FirebaseHelper.getInstance().getStorageReference();
 
         btnAddEdit.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -231,19 +264,20 @@ public class AddItemActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         ItemID = intent.getStringExtra("InventoryActivity.ItemID");
+        log("Passed ItemID from InventoryActivity is " + ItemID);
 
-        if(ItemID != null && !ItemID.isEmpty()){
+        if (ItemID != null && !ItemID.isEmpty()) {
             try {
                 readItem();
-            }catch (Exception ex){
-                Log.w("EXC","Failed to cast.");
+            } catch (Exception ex) {
+                Log.w("EXC", "Failed to cast.");
             }
         }
     }
 
-    private void initViews(){
+    private void initViews() {
         // bind item details from UI
-        imageView  = findViewById(R.id.imgViewItem);
+        imageView = findViewById(R.id.imgViewItem);
         edItemName = findViewById(R.id.edItemName);
         edItemPrice = findViewById(R.id.edItemPrice);
         edItemQty = findViewById(R.id.edItemQty);

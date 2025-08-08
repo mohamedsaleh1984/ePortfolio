@@ -2,6 +2,7 @@ package com.zybooks.inventoryapp.repo;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -59,9 +60,12 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.InventoryVie
         holder.quantityTextView.setText("Qty: " + item.getQuantity());
         holder.tvItemID.setText(String.valueOf(item.getId()));
 
-        byte[] bitarray = item.getImage();
-        if (bitarray != null && bitarray.length > 0) {
-            Bitmap bmp = Helper.getBitmapFromBytes(bitarray);
+
+        if (item.getImageBase64() != null && item.getImageBase64().length() > 0) {
+
+            byte[] bytes = Base64.decode(item.getImageBase64(), Base64.DEFAULT);
+
+            Bitmap bmp = Helper.getBitmapFromBytes(bytes);
             holder.imgView.setImageBitmap(Bitmap.createScaledBitmap(
                     bmp, bmp.getWidth(), bmp.getHeight(), false));
         } else {

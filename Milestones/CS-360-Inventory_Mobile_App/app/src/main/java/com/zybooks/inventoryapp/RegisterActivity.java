@@ -19,7 +19,7 @@ import com.zybooks.inventoryapp.utils.FirebaseHelper;
 public class RegisterActivity extends AppCompatActivity {
     private EditText edEmailAddress, edPwd1, edPwd2;
 
-    private Button btnRegister,btnCancel;
+    private Button btnRegister, btnCancel;
     private ProgressBar progressBar;
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
@@ -41,7 +41,7 @@ public class RegisterActivity extends AppCompatActivity {
                 ValidationResult validationResult = validateRegister();
                 if (validationResult.hasError()) {
                     //Helper.ToastNotify(RegisterActivity.this, validationResult.getErrorMessage());
-                    Helper.SnackbarNotify(v,validationResult.getErrorMessage());
+                    Helper.SnackbarNotify(v, validationResult.getErrorMessage());
                 } else {
                     RegisterUser(v);
                 }
@@ -58,7 +58,7 @@ public class RegisterActivity extends AppCompatActivity {
         });
     }
 
-    private void RegisterUser(View view){
+    private void RegisterUser(View view) {
         progressBar.setVisibility(View.VISIBLE);
         btnRegister.setEnabled(false);
 
@@ -78,7 +78,7 @@ public class RegisterActivity extends AppCompatActivity {
                                     btnRegister.setEnabled(true);
 
                                     if (userTask.isSuccessful()) {
-                                        Helper.SnackbarNotify(view,"Registration successful");
+                                        Helper.SnackbarNotify(view, "Registration successful");
                                         startActivity(new Intent(RegisterActivity.this, InventoryActivity.class));
                                         finish();
                                     } else {
@@ -89,13 +89,13 @@ public class RegisterActivity extends AppCompatActivity {
                     } else {
                         progressBar.setVisibility(View.GONE);
                         btnRegister.setEnabled(true);
-                        Helper.SnackbarNotify(view,"Registration failed - " + task.getException().getMessage());
+                        Helper.SnackbarNotify(view, "Registration failed - " + task.getException().getMessage());
                     }
                 });
     }
 
 
-    void initViews(){
+    void initViews() {
         edEmailAddress = findViewById(R.id.edEmailAddress);
         edPwd1 = findViewById(R.id.edPwd);
         edPwd2 = findViewById(R.id.edReenterPwd);
@@ -132,7 +132,7 @@ public class RegisterActivity extends AppCompatActivity {
             return vr;
         }
 
-        if (edPwd2.getText().length()< 6 || edPwd1.getText().length() < 6) {
+        if (edPwd2.getText().length() < 6 || edPwd1.getText().length() < 6) {
             vr.setHasError(true);
             vr.setErrorMessage("You must re-enter the password");
             return vr;

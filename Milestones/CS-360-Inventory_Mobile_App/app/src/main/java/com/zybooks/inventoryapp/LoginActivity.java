@@ -17,8 +17,8 @@ import com.zybooks.inventoryapp.model.ValidationResult;
 import com.zybooks.inventoryapp.utils.FirebaseHelper;
 
 public class LoginActivity extends AppCompatActivity {
-    private EditText etEmail,etPassword;
-    Button btnLogin,btnRegister;
+    private EditText etEmail, etPassword;
+    Button btnLogin, btnRegister;
     private TextView tvRegister;
     private ProgressBar progressBar;
     private FirebaseAuth mAuth;
@@ -43,7 +43,7 @@ public class LoginActivity extends AppCompatActivity {
 
             ValidationResult valid = IsValidToLogin();
 
-            if(!valid.hasError()){
+            if (!valid.hasError()) {
                 progressBar.setVisibility(View.VISIBLE);
                 btnLogin.setEnabled(false);
 
@@ -60,13 +60,13 @@ public class LoginActivity extends AppCompatActivity {
                                 startActivity(new Intent(LoginActivity.this, InventoryActivity.class));
                                 finish();
                             } else {
-                                Helper.SnackbarNotify(v,"Login failed: You need to register your account first.");
+                                Helper.SnackbarNotify(v, "Login failed: You need to register your account first.");
                             }
                         });
 
 
-            }else{
-                Helper.SnackbarNotify(v,valid.getErrorMessage());
+            } else {
+                Helper.SnackbarNotify(v, valid.getErrorMessage());
             }
         });
 
@@ -78,8 +78,8 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    private void initViews(){
-        etEmail =findViewById(R.id.edEmailAddress);
+    private void initViews() {
+        etEmail = findViewById(R.id.edEmailAddress);
         etPassword = findViewById(R.id.edPwd);
         btnLogin = findViewById(R.id.btnLogin);
         btnRegister = findViewById(R.id.btnRegister);
@@ -87,17 +87,17 @@ public class LoginActivity extends AppCompatActivity {
         progressBar = findViewById(R.id.progressBar);
     }
 
-    private ValidationResult IsValidToLogin(){
-        ValidationResult vr = new ValidationResult(false,"");
+    private ValidationResult IsValidToLogin() {
+        ValidationResult vr = new ValidationResult(false, "");
 
 
-        if(etEmail.getText().length() == 0){
+        if (etEmail.getText().length() == 0) {
             vr.setHasError(true);
             vr.setErrorMessage("You must enter your email.");
             return vr;
         }
 
-        if(etPassword.getText().toString().isEmpty()){
+        if (etPassword.getText().toString().isEmpty()) {
             vr.setHasError(true);
             vr.setErrorMessage("Password can't be empty.");
             return vr;

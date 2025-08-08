@@ -34,17 +34,16 @@ import com.zybooks.inventoryapp.utils.FirebaseHelper;
 import java.util.ArrayList;
 
 public class InventoryActivity extends AppCompatActivity
-implements
+        implements
         ItemsAdapter.OnDeleteItemButtonClickListener,
-        ItemsAdapter.OnItemClickListener
-{
+        ItemsAdapter.OnItemClickListener {
     private static final int SMS_PERMISSION_REQUEST_CODE = 100;
     private ArrayList<Item> itemList;
-    private  SearchView searchView;
+    private SearchView searchView;
     private ItemsAdapter itemsAdapter;
     private RecyclerView recyclerView;
     private FirebaseFirestore db;
-    private FloatingActionButton btnSendSms,btnAddItem;
+    private FloatingActionButton btnSendSms, btnAddItem;
     private String TAG = "MOE";
 
     @Override
@@ -54,7 +53,7 @@ implements
 
         initViews();
 
-        itemList =  new ArrayList<>();
+        itemList = new ArrayList<>();
         itemsAdapter = new ItemsAdapter(this, itemList, this, this);
         recyclerView.setHasFixedSize(true);
 
@@ -91,11 +90,11 @@ implements
                 checkAndRequestSmsPermission();
             }
         });
-        
+
         loadItems();
     }
 
-    void loadItems(){
+    void loadItems() {
         db.collection("items")
                 .orderBy("createdAt", Query.Direction.DESCENDING)
                 .addSnapshotListener((value, error) -> {
@@ -115,26 +114,28 @@ implements
                 });
     }
 
-    private void  initViews(){
+    private void initViews() {
         recyclerView = findViewById(R.id.recyclerView);
         btnSendSms = findViewById(R.id.btnSendSms);
         btnAddItem = findViewById(R.id.addButton);
         searchView = findViewById(R.id.searchView);
         searchView.clearFocus();
     }
-    private void filterList(String text){
-        ArrayList<Item>  filteredList = new ArrayList<>();
-        for(Item item:itemList){
-            if(item.getName().toLowerCase().contains(text.toLowerCase())){
+
+    private void filterList(String text) {
+        ArrayList<Item> filteredList = new ArrayList<>();
+        for (Item item : itemList) {
+            if (item.getName().toLowerCase().contains(text.toLowerCase())) {
                 filteredList.add(item);
             }
         }
-        if(filteredList.isEmpty()){
-            Toast.makeText(this,"No data found",Toast.LENGTH_LONG).show();
-        }else{
+        if (filteredList.isEmpty()) {
+            Toast.makeText(this, "No data found", Toast.LENGTH_LONG).show();
+        } else {
             itemsAdapter.setFilteredList(filteredList);
         }
     }
+
     private void showPermissionDialog() {
         new AlertDialog.Builder(this)
                 .setTitle("SMS Permission Needed")
@@ -150,12 +151,13 @@ implements
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Helper.ToastNotify(InventoryActivity.this,"Permission denied. Some features may not work.");
+                        Helper.ToastNotify(InventoryActivity.this, "Permission denied. Some features may not work.");
                     }
                 })
                 .setCancelable(false)
                 .show();
     }
+
     private void checkAndRequestSmsPermission() {
         int selfPermission = ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS);
         if (selfPermission != PackageManager.PERMISSION_GRANTED) {
@@ -186,7 +188,7 @@ implements
         }
     }
 
-    private void sendSms(){
+    private void sendSms() {
         String phoneNumber = "929-262-8798";
         String message = "Item# IPhone13 Qty is zero";
 
@@ -203,7 +205,7 @@ implements
     public void onItemClick(int position) {
         Item item = itemList.get(position);
         Intent intent = new Intent(InventoryActivity.this, AddItemActivity.class);
-        intent.putExtra("InventoryActivity.ItemID",String.valueOf(item.getId()));
+        intent.putExtra("InventoryActivity.ItemID", String.valueOf(item.getId()));
         startActivity(intent);
     }
 
@@ -235,7 +237,7 @@ implements
     }
 
     @Override
-    protected void onResume(){
+    protected void onResume() {
         super.onResume();
         loadItems();
     }
