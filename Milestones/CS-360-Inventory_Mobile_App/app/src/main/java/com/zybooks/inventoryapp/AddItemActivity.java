@@ -23,6 +23,7 @@ import com.google.firebase.firestore.Blob;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.rpc.Help;
@@ -47,20 +48,19 @@ public class AddItemActivity extends AppCompatActivity {
     private FirebaseFirestore db;
 
     private void createUpdateItem() {
-        log("createUpdateItem");
 
         ValidationResult validation_result = validatesSaveItem();
+
         if (validation_result.hasError()) {
             Helper.ToastNotify(AddItemActivity.this, validation_result.getErrorMessage());
             return;
         }
 
-        log("Passed Validation...");
-        log("ItemID => " + ItemID);
+        // Create New Item
         if (ItemID == null || ItemID.isEmpty()) {
-            log("ItemID.isEmpty()");
+            log("Create New Item...");
+
             Item item = createNewItem();
-            log("Item Created");
 
             db.collection("items")
                     .add(item)
@@ -77,31 +77,30 @@ public class AddItemActivity extends AppCompatActivity {
                     });
             finish();
         } else {
-            //TODO: Update Item
-            log("Update Item...");
+            log("Update Existing Item...");
             Item item = createNewItem();
-
-            DocumentReference docRef = db.collection("items").document(ItemID);
+            Log.wtf(TAG,item.toString());
+            Log.wtf(TAG,"ItemID => " + ItemID);
 
             Map<String, Object> updates = new HashMap<>();
-            updates.put("id", item.getId());
+            updates.put("id", ItemID);
             updates.put("name", item.getName());
             updates.put("price", item.getPrice());
             updates.put("quantity", item.getQuantity());
             updates.put("imageBase64", item.getImageBase64());
-            docRef.update(updates).addOnSuccessListener(success->{
-                Helper.ToastNotify(AddItemActivity.this, "Item saved successfully");
-                finish();
-            }).addOnFailureListener(fail ->{
-                Helper.ToastNotify(AddItemActivity.this, "Failed to save item");
-                finish();
-            });
-
+            db.collection("items").document(ItemID)
+                    .set(updates, SetOptions.merge()).addOnSuccessListener(success->{
+                        Helper.ToastNotify(AddItemActivity.this, "Item saved successfully");
+                        finish();
+                    }).addOnFailureListener(fail ->{
+                        Helper.ToastNotify(AddItemActivity.this, "Failed to save item");
+                        finish();
+                    });
         }
     }
 
     private void readItem() {
-        log("readItem");
+        log("readItem =>>"+ ItemID);
         DocumentReference docRef = db.collection("items").document(ItemID);
         docRef.get()
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -109,7 +108,7 @@ public class AddItemActivity extends AppCompatActivity {
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         if (documentSnapshot.exists()) {
 
-                            log(documentSnapshot.toString());
+                           //  log(documentSnapshot.toString());
 
                             String id = documentSnapshot.getString("id");
                             String name = documentSnapshot.getString("name");
@@ -142,13 +141,14 @@ public class AddItemActivity extends AppCompatActivity {
     }
 
     private Item createNewItem() {
-        log("before");
+        // log("before");
         String name = edItemName.getText().toString().trim();
         int qty = Integer.parseInt(edItemQty.getText().toString().trim());
         float price = Float.parseFloat(edItemPrice.getText().toString().trim());
 
         if (ItemID == null || ItemID.isEmpty()) {
             ItemID = UUID.randomUUID().toString();
+            log("Set Item ID => "+ ItemID);
         }
 
         String base64 = "";
@@ -157,9 +157,10 @@ public class AddItemActivity extends AppCompatActivity {
         Bitmap bitmap = imageView.getDrawingCache();
         byte[] imageBytes = Helper.getBytesFromBitmap(bitmap);
 
-        if(imageBytes != null &&  imageBytes.length>0){
+        if(imageBytes.length>0){
             base64 = Base64.getEncoder().encodeToString(imageBytes);
         }
+
         Item itemToReturn = new Item(ItemID, name, qty, price, base64);
         log("Item Created "+ itemToReturn);
 

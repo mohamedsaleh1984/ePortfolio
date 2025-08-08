@@ -3,6 +3,7 @@ package com.zybooks.inventoryapp.repo;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.Base64;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,20 +55,17 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.InventoryVie
     @Override
     public void onBindViewHolder(@NonNull InventoryViewHolder holder, int position) {
         Item item = items.get(position);
+        Log.wtf("MOE","onBindViewHolder => " + item.toString());
 
         holder.nameTextView.setText(item.getName());
         holder.priceTextView.setText("Price: " + item.getPrice());
         holder.quantityTextView.setText("Qty: " + item.getQuantity());
-        holder.tvItemID.setText(String.valueOf(item.getId()));
-
+        holder.tvItemID.setText(item.getId());
 
         if (item.getImageBase64() != null && item.getImageBase64().length() > 0) {
-
             byte[] bytes = Base64.decode(item.getImageBase64(), Base64.DEFAULT);
-
             Bitmap bmp = Helper.getBitmapFromBytes(bytes);
-            holder.imgView.setImageBitmap(Bitmap.createScaledBitmap(
-                    bmp, bmp.getWidth(), bmp.getHeight(), false));
+            holder.imgView.setImageBitmap(Bitmap.createScaledBitmap(bmp, bmp.getWidth(), bmp.getHeight(), false));
         } else {
             holder.imgView.setImageDrawable(null); // Clear image if no data
         }

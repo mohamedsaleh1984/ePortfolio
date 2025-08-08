@@ -204,8 +204,11 @@ public class InventoryActivity extends AppCompatActivity
     @Override
     public void onItemClick(int position) {
         Item item = itemList.get(position);
+        Log.wtf(TAG,item.toString());
+
         Intent intent = new Intent(InventoryActivity.this, AddItemActivity.class);
-        intent.putExtra("InventoryActivity.ItemID", String.valueOf(item.getId()));
+        intent.putExtra("InventoryActivity.ItemID", item.getId());
+        Log.wtf(TAG,item.toString());
         startActivity(intent);
     }
 
