@@ -8,7 +8,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.ProgressBar;
 import android.widget.SearchView;
 import android.widget.Toast;
 
@@ -23,11 +22,8 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 import com.zybooks.inventoryapp.helper.Helper;
 import com.zybooks.inventoryapp.model.Item;
-
 import com.zybooks.inventoryapp.repo.ItemsAdapter;
 import com.zybooks.inventoryapp.utils.FirebaseHelper;
 
@@ -44,7 +40,7 @@ public class InventoryActivity extends AppCompatActivity
     private RecyclerView recyclerView;
     private FirebaseFirestore db;
     private FloatingActionButton btnSendSms, btnAddItem;
-    private String TAG = "MOE";
+    private final String TAG = "MOE";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -204,11 +200,11 @@ public class InventoryActivity extends AppCompatActivity
     @Override
     public void onItemClick(int position) {
         Item item = itemList.get(position);
-        Log.wtf(TAG,item.toString());
+        Log.wtf(TAG, item.toString());
 
         Intent intent = new Intent(InventoryActivity.this, AddItemActivity.class);
         intent.putExtra("InventoryActivity.ItemID", item.getId());
-        Log.wtf(TAG,item.toString());
+        Log.wtf(TAG, item.toString());
         startActivity(intent);
     }
 

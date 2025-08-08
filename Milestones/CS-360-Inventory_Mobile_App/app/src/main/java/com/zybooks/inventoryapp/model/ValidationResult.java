@@ -14,12 +14,12 @@ public class ValidationResult {
         return this.errorMessage;
     }
 
-    public boolean hasError() {
-        return this.hasError;
-    }
-
     public void setErrorMessage(String errMessage) {
         this.errorMessage = errMessage;
+    }
+
+    public boolean hasError() {
+        return this.hasError;
     }
 
     public void setHasError(boolean hasError) {

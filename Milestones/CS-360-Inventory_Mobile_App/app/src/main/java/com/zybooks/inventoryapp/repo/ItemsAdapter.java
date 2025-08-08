@@ -23,22 +23,14 @@ import java.util.ArrayList;
 public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.InventoryViewHolder> {
 
     private final Context context;
-    private   ArrayList<Item> items;
     private final OnDeleteItemButtonClickListener deleteButtonClickListener;
     private final OnItemClickListener itemClickListener;
-
-    public interface OnDeleteItemButtonClickListener {
-        void onItemDeleteButtonClick(int position);
-    }
-
-    public interface OnItemClickListener {
-        void onItemClick(int position);
-    }
+    private ArrayList<Item> items;
 
     public ItemsAdapter(Context context,
-                            ArrayList<Item> items,
-                            OnDeleteItemButtonClickListener deleteListener,
-                            OnItemClickListener itemListener) {
+                        ArrayList<Item> items,
+                        OnDeleteItemButtonClickListener deleteListener,
+                        OnItemClickListener itemListener) {
         this.context = context;
         this.items = items;
         this.deleteButtonClickListener = deleteListener;
@@ -55,7 +47,7 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.InventoryVie
     @Override
     public void onBindViewHolder(@NonNull InventoryViewHolder holder, int position) {
         Item item = items.get(position);
-        Log.wtf("MOE","onBindViewHolder => " + item.toString());
+        Log.wtf("MOE", "onBindViewHolder => " + item.toString());
 
         holder.nameTextView.setText(item.getName());
         holder.priceTextView.setText(String.format("Price: %s", item.getPrice()));
@@ -88,9 +80,18 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.InventoryVie
         return items.size();
     }
 
-    public void setFilteredList(ArrayList<Item> items){
+    public void setFilteredList(ArrayList<Item> items) {
         this.items = items;
     }
+
+    public interface OnDeleteItemButtonClickListener {
+        void onItemDeleteButtonClick(int position);
+    }
+
+    public interface OnItemClickListener {
+        void onItemClick(int position);
+    }
+
     public static class InventoryViewHolder extends RecyclerView.ViewHolder {
         TextView nameTextView, quantityTextView, priceTextView, tvItemID;
         ImageView imgView;

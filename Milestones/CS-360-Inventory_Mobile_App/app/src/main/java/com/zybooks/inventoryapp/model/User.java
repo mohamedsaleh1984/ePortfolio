@@ -1,7 +1,5 @@
 package com.zybooks.inventoryapp.model;
 
-import java.util.UUID;
-
 //TODO: Add Comments.
 public class User {
     private String id = "";
@@ -19,10 +17,6 @@ public class User {
     public User() {
     }
 
-    public void setCreatedAt(long createdAt) {
-        this.createdAt = createdAt;
-    }
-
     // Getters
     public String getId() {
         return id;
@@ -38,6 +32,10 @@ public class User {
 
     public long getCreatedAt() {
         return createdAt;
+    }
+
+    public void setCreatedAt(long createdAt) {
+        this.createdAt = createdAt;
     }
 
 }

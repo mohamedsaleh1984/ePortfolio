@@ -1,6 +1,5 @@
 package com.zybooks.inventoryapp;
 
-import android.content.ClipData;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -11,22 +10,16 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.firestore.Blob;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
-import com.google.rpc.Help;
 import com.zybooks.inventoryapp.helper.Helper;
 import com.zybooks.inventoryapp.model.Item;
 import com.zybooks.inventoryapp.model.ValidationResult;
@@ -77,7 +70,7 @@ public class AddItemActivity extends AppCompatActivity {
                     });
             finish();
         } else {
-            log("Update Existing Item ID "+ ItemID);
+            log("Update Existing Item ID " + ItemID);
             Item item = createNewItem();
             Map<String, Object> updates = new HashMap<>();
             updates.put("name", item.getName());
@@ -86,10 +79,10 @@ public class AddItemActivity extends AppCompatActivity {
             updates.put("imageBase64", item.getImageBase64());
             log("Before Exec");
             db.collection("items").document(ItemID)
-                    .set(updates, SetOptions.merge()).addOnSuccessListener(success->{
+                    .set(updates, SetOptions.merge()).addOnSuccessListener(success -> {
                         Helper.ToastNotify(AddItemActivity.this, "Item saved successfully");
                         finish();
-                    }).addOnFailureListener(fail ->{
+                    }).addOnFailureListener(fail -> {
                         Helper.ToastNotify(AddItemActivity.this, "Failed to save item");
                         finish();
                     });
@@ -99,7 +92,7 @@ public class AddItemActivity extends AppCompatActivity {
     }
 
     private void readItem() {
-        log("readItem =>>"+ ItemID);
+        log("readItem =>>" + ItemID);
         DocumentReference docRef = db.collection("items").document(ItemID);
         docRef.get()
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -107,9 +100,9 @@ public class AddItemActivity extends AppCompatActivity {
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         if (documentSnapshot.exists()) {
 
-                           // log(documentSnapshot.toString());
+                            // log(documentSnapshot.toString());
 
-                           String name = documentSnapshot.getString("name");
+                            String name = documentSnapshot.getString("name");
                             float price = documentSnapshot.get("price", Float.class);
                             int quantity = documentSnapshot.get("quantity", Integer.class);
                             String image64 = documentSnapshot.getString("imageBase64");
@@ -145,7 +138,7 @@ public class AddItemActivity extends AppCompatActivity {
 
         if (ItemID == null || ItemID.isEmpty()) {
             ItemID = UUID.randomUUID().toString();
-            log("Set Item ID => "+ ItemID);
+            log("Set Item ID => " + ItemID);
         }
 
         String base64 = "";
@@ -154,12 +147,12 @@ public class AddItemActivity extends AppCompatActivity {
         Bitmap bitmap = imageView.getDrawingCache();
         byte[] imageBytes = Helper.getBytesFromBitmap(bitmap);
 
-        if(imageBytes.length>0){
+        if (imageBytes.length > 0) {
             base64 = Base64.getEncoder().encodeToString(imageBytes);
         }
 
         Item itemToReturn = new Item(ItemID, name, qty, price, base64);
-        log("Item Created "+ itemToReturn);
+        log("Item Created " + itemToReturn);
 
         return itemToReturn;
     }
@@ -249,7 +242,7 @@ public class AddItemActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 // place holder
-                ItemID="";
+                ItemID = "";
                 finish();
             }
         });

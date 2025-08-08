@@ -7,9 +7,9 @@ import com.google.firebase.storage.StorageReference;
 
 public class FirebaseHelper {
     private static FirebaseHelper instance;
-    private FirebaseAuth mAuth;
-    private FirebaseFirestore db;
-    private StorageReference storageRef;
+    private final FirebaseAuth mAuth;
+    private final FirebaseFirestore db;
+    private final StorageReference storageRef;
 
     private FirebaseHelper() {
         mAuth = FirebaseAuth.getInstance();

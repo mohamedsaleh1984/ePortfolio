@@ -17,8 +17,8 @@ import com.zybooks.inventoryapp.model.ValidationResult;
 import com.zybooks.inventoryapp.utils.FirebaseHelper;
 
 public class LoginActivity extends AppCompatActivity {
-    private EditText etEmail, etPassword;
     Button btnLogin, btnRegister;
+    private EditText etEmail, etPassword;
     private TextView tvRegister;
     private ProgressBar progressBar;
     private FirebaseAuth mAuth;
@@ -89,7 +89,6 @@ public class LoginActivity extends AppCompatActivity {
 
     private ValidationResult IsValidToLogin() {
         ValidationResult vr = new ValidationResult(false, "");
-
 
         if (etEmail.getText().length() == 0) {
             vr.setHasError(true);
