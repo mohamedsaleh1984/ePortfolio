@@ -22,7 +22,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.zybooks.inventoryapp.helper.Helper;
+import com.zybooks.inventoryapp.utils.Helper;
 import com.zybooks.inventoryapp.model.Item;
 import com.zybooks.inventoryapp.repo.ItemsAdapter;
 import com.zybooks.inventoryapp.utils.FirebaseHelper;
@@ -40,8 +40,8 @@ public class InventoryActivity extends AppCompatActivity
     private RecyclerView recyclerView;
     private FirebaseFirestore db;
     private FloatingActionButton btnSendSms, btnAddItem;
-    private final String TAG = "MOE";
 
+    //
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,6 +49,7 @@ public class InventoryActivity extends AppCompatActivity
 
         initViews();
 
+        // Bind ArrayList with Adapter.
         itemList = new ArrayList<>();
         itemsAdapter = new ItemsAdapter(this, itemList, this, this);
         recyclerView.setHasFixedSize(true);
@@ -58,6 +59,7 @@ public class InventoryActivity extends AppCompatActivity
 
         db = FirebaseHelper.getInstance().getFirestore();
 
+        // Search Item handler
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -71,6 +73,10 @@ public class InventoryActivity extends AppCompatActivity
             }
         });
 
+        // Load Items
+        loadItems();
+
+        //
         btnAddItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -87,9 +93,10 @@ public class InventoryActivity extends AppCompatActivity
             }
         });
 
-        loadItems();
+
     }
 
+    // Load Items from Firebase
     void loadItems() {
         db.collection("items")
                 .orderBy("createdAt", Query.Direction.DESCENDING)
@@ -110,6 +117,7 @@ public class InventoryActivity extends AppCompatActivity
                 });
     }
 
+    // Bind UI with Component.
     private void initViews() {
         recyclerView = findViewById(R.id.recyclerView);
         btnSendSms = findViewById(R.id.btnSendSms);
@@ -118,6 +126,7 @@ public class InventoryActivity extends AppCompatActivity
         searchView.clearFocus();
     }
 
+    // Filter Items
     private void filterList(String text) {
         ArrayList<Item> filteredList = new ArrayList<>();
         for (Item item : itemList) {
@@ -132,6 +141,7 @@ public class InventoryActivity extends AppCompatActivity
         }
     }
 
+    // Show Permission Dialog
     private void showPermissionDialog() {
         new AlertDialog.Builder(this)
                 .setTitle("SMS Permission Needed")
@@ -154,6 +164,8 @@ public class InventoryActivity extends AppCompatActivity
                 .show();
     }
 
+
+    // Check App Send SMS Permission
     private void checkAndRequestSmsPermission() {
         int selfPermission = ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS);
         if (selfPermission != PackageManager.PERMISSION_GRANTED) {
@@ -163,6 +175,7 @@ public class InventoryActivity extends AppCompatActivity
             sendSms();
         }
     }
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
@@ -184,6 +197,7 @@ public class InventoryActivity extends AppCompatActivity
         }
     }
 
+    // Send SMS
     private void sendSms() {
         String phoneNumber = "929-262-8798";
         String message = "Item# IPhone13 Qty is zero";
@@ -197,16 +211,20 @@ public class InventoryActivity extends AppCompatActivity
         startActivity(smsIntent);
     }
 
+    // On Click Add New Item
     @Override
     public void onItemClick(int position) {
         Item item = itemList.get(position);
-        Log.wtf(TAG, item.toString());
+        Helper.Log(item.toString());
+
 
         Intent intent = new Intent(InventoryActivity.this, AddItemActivity.class);
         intent.putExtra("InventoryActivity.ItemID", item.getId());
-        Log.wtf(TAG, item.toString());
+        Helper.Log(item.toString());
         startActivity(intent);
     }
+
+    // On Click Delete item.
 
     @Override
     public void onItemDeleteButtonClick(int position) {
@@ -220,6 +238,7 @@ public class InventoryActivity extends AppCompatActivity
                 .show();
     }
 
+    // Delete Item from firebase.
     private void deleteItem(Item item, int position) {
         db.collection("items").document(item.getId())
                 .delete()

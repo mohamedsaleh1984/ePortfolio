@@ -15,7 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.zybooks.inventoryapp.R;
-import com.zybooks.inventoryapp.helper.Helper;
+import com.zybooks.inventoryapp.utils.Helper;
 import com.zybooks.inventoryapp.model.Item;
 
 import java.util.ArrayList;
@@ -47,7 +47,7 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.InventoryVie
     @Override
     public void onBindViewHolder(@NonNull InventoryViewHolder holder, int position) {
         Item item = items.get(position);
-        Log.wtf("MOE", "onBindViewHolder => " + item.toString());
+        Helper.Log( "onBindViewHolder => " + item.toString());
 
         holder.nameTextView.setText(item.getName());
         holder.priceTextView.setText(String.format("Price: %s", item.getPrice()));

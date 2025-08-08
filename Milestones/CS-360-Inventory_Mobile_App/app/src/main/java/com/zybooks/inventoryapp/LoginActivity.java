@@ -12,7 +12,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.zybooks.inventoryapp.helper.Helper;
+import com.zybooks.inventoryapp.utils.Helper;
 import com.zybooks.inventoryapp.model.ValidationResult;
 import com.zybooks.inventoryapp.utils.FirebaseHelper;
 

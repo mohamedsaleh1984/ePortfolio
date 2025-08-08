@@ -4,7 +4,7 @@ import androidx.annotation.NonNull;
 
 import java.util.UUID;
 
-//TODO: Add Comments.
+// a Representation of Item
 public class Item {
     private String id = "";
     private String name = "";
