@@ -1,5 +1,7 @@
 package com.zybooks.inventoryapp.model;
 
+import androidx.annotation.NonNull;
+
 import java.util.UUID;
 
 //TODO: Add Comments.
@@ -60,11 +62,12 @@ public class Item {
         this.createdAt = createdAt;
     }
 
+    @NonNull
     @Override
     public String toString() {
-        return "Item [id=" + id + ", name=" + name + ", price=" + price + ", qty=" + quantity +"]";
+        return "Item [id=" + this.id + ", name=" + name + ", price=" + price + ", qty=" + quantity +"]";
     }
     public String toStringWithImage() {
-        return "Item [id=" + id + ", name=" + name + ", price=" + price + ", qty=" + quantity + " , image64=" + imageBase64 + "]";
+        return "Item [id=" + this.id + ", name=" + name + ", price=" + price + ", qty=" + quantity + " , image64=" + imageBase64 + "]";
     }
 }

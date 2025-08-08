@@ -77,17 +77,14 @@ public class AddItemActivity extends AppCompatActivity {
                     });
             finish();
         } else {
-            log("Update Existing Item...");
+            log("Update Existing Item ID "+ ItemID);
             Item item = createNewItem();
-            Log.wtf(TAG,item.toString());
-            Log.wtf(TAG,"ItemID => " + ItemID);
-
             Map<String, Object> updates = new HashMap<>();
-            updates.put("id", ItemID);
             updates.put("name", item.getName());
             updates.put("price", item.getPrice());
             updates.put("quantity", item.getQuantity());
             updates.put("imageBase64", item.getImageBase64());
+            log("Before Exec");
             db.collection("items").document(ItemID)
                     .set(updates, SetOptions.merge()).addOnSuccessListener(success->{
                         Helper.ToastNotify(AddItemActivity.this, "Item saved successfully");
@@ -96,6 +93,8 @@ public class AddItemActivity extends AppCompatActivity {
                         Helper.ToastNotify(AddItemActivity.this, "Failed to save item");
                         finish();
                     });
+            log("After Exec");
+            finish();
         }
     }
 
@@ -108,15 +107,13 @@ public class AddItemActivity extends AppCompatActivity {
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         if (documentSnapshot.exists()) {
 
-                           //  log(documentSnapshot.toString());
+                           // log(documentSnapshot.toString());
 
-                            String id = documentSnapshot.getString("id");
-                            String name = documentSnapshot.getString("name");
+                           String name = documentSnapshot.getString("name");
                             float price = documentSnapshot.get("price", Float.class);
                             int quantity = documentSnapshot.get("quantity", Integer.class);
                             String image64 = documentSnapshot.getString("imageBase64");
 
-                            ItemID = id;
                             edItemName.setText(name);
                             edItemPrice.setText(price + "");
                             edItemQty.setText(quantity + "");
@@ -252,6 +249,7 @@ public class AddItemActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 // place holder
+                ItemID="";
                 finish();
             }
         });

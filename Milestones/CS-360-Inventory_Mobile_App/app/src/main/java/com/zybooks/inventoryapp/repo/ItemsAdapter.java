@@ -58,11 +58,11 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.InventoryVie
         Log.wtf("MOE","onBindViewHolder => " + item.toString());
 
         holder.nameTextView.setText(item.getName());
-        holder.priceTextView.setText("Price: " + item.getPrice());
-        holder.quantityTextView.setText("Qty: " + item.getQuantity());
+        holder.priceTextView.setText(String.format("Price: %s", item.getPrice()));
+        holder.quantityTextView.setText(String.format("Qty: %d", item.getQuantity()));
         holder.tvItemID.setText(item.getId());
 
-        if (item.getImageBase64() != null && item.getImageBase64().length() > 0) {
+        if (item.getImageBase64() != null && !item.getImageBase64().isEmpty()) {
             byte[] bytes = Base64.decode(item.getImageBase64(), Base64.DEFAULT);
             Bitmap bmp = Helper.getBitmapFromBytes(bytes);
             holder.imgView.setImageBitmap(Bitmap.createScaledBitmap(bmp, bmp.getWidth(), bmp.getHeight(), false));
