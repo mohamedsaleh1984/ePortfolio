@@ -119,6 +119,7 @@ public class InventoryActivity extends AppCompatActivity
     }
 
     private void filterList(String text) {
+        /*
         ArrayList<Item> filteredList = new ArrayList<>();
         for (Item item : itemList) {
             if (item.getName().toLowerCase().contains(text.toLowerCase())) {
@@ -130,6 +131,7 @@ public class InventoryActivity extends AppCompatActivity
         } else {
             itemsAdapter.setFilteredList(filteredList);
         }
+        */
     }
 
     private void showPermissionDialog() {
@@ -225,7 +227,6 @@ public class InventoryActivity extends AppCompatActivity
                 .delete()
                 .addOnSuccessListener(aVoid -> {
                     // Remove item from local list and notify adapter
-                    itemList.remove(position);
                     itemsAdapter.notifyItemRemoved(position);
                     itemsAdapter.notifyItemRangeChanged(position, itemList.size());
                     Toast.makeText(InventoryActivity.this, "Item deleted successfully", Toast.LENGTH_SHORT).show();
