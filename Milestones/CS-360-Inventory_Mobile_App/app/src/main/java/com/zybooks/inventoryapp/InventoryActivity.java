@@ -126,38 +126,39 @@ public class InventoryActivity extends AppCompatActivity
 
     private void filterList(String text) {
         if(text.isEmpty()){
+            Log.wtf(TAG,"RELOAD....all Items");
             //Load all elements
             loadItems();
             return;
         }
 
-        Query qry = db.collection("items").whereArrayContains("name",text.toLowerCase());
-        qry.addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+        Log.wtf(TAG,"Search..."+ text);
 
-                if(value.getDocuments() == null){
-
-                }else{
-                    ArrayList<Item> itemList = new ArrayList<>();
-
-                    for (DocumentSnapshot document : value.getDocuments()) {
-                        Item item = document.toObject(Item.class);
-                        if (item != null) {
-                            itemList.add(item);
-                        }
+        db.collection("items").whereEqualTo("name",text).get().addOnCompleteListener(task ->{
+            if (task.isSuccessful()) {
+                ArrayList<Item> itemList = new ArrayList<>();
+                for (QueryDocumentSnapshot document : task.getResult()) {
+                    Item item = document.toObject(Item.class);
+                    if (item != null) {
+                        itemList.add(item);
                     }
+                }
+                if(!itemList.isEmpty()){
+                    Log.wtf(TAG,"Total items  "+ itemList.size());
                     // Update your UI with the search results
                     updateItemList(itemList);
                 }
+
+            } else {
+                Log.wtf(TAG, "Error getting documents.", task.getException());
             }
         });
-
-
     }
 
     private void updateItemList(ArrayList<Item> items) {
-        itemsAdapter = new ItemsAdapter(this, items, this, this);
+        itemList.clear();
+        itemList = items;
+        itemsAdapter = new ItemsAdapter(this, itemList, this, this);
         recyclerView.setAdapter(itemsAdapter);
     }
 
