@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.SearchView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -19,15 +20,20 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.zybooks.inventoryapp.helper.Helper;
 import com.zybooks.inventoryapp.model.Item;
 import com.zybooks.inventoryapp.repo.ItemsAdapter;
 import com.zybooks.inventoryapp.utils.FirebaseHelper;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class InventoryActivity extends AppCompatActivity
         implements
@@ -119,20 +125,42 @@ public class InventoryActivity extends AppCompatActivity
     }
 
     private void filterList(String text) {
-        /*
-        ArrayList<Item> filteredList = new ArrayList<>();
-        for (Item item : itemList) {
-            if (item.getName().toLowerCase().contains(text.toLowerCase())) {
-                filteredList.add(item);
+        if(text.isEmpty()){
+            //Load all elements
+            loadItems();
+            return;
+        }
+
+        Query qry = db.collection("items").whereArrayContains("name",text.toLowerCase());
+        qry.addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+
+                if(value.getDocuments() == null){
+
+                }else{
+                    ArrayList<Item> itemList = new ArrayList<>();
+
+                    for (DocumentSnapshot document : value.getDocuments()) {
+                        Item item = document.toObject(Item.class);
+                        if (item != null) {
+                            itemList.add(item);
+                        }
+                    }
+                    // Update your UI with the search results
+                    updateItemList(itemList);
+                }
             }
-        }
-        if (filteredList.isEmpty()) {
-            Toast.makeText(this, "No data found", Toast.LENGTH_LONG).show();
-        } else {
-            itemsAdapter.setFilteredList(filteredList);
-        }
-        */
+        });
+
+
     }
+
+    private void updateItemList(ArrayList<Item> items) {
+        itemsAdapter = new ItemsAdapter(this, items, this, this);
+        recyclerView.setAdapter(itemsAdapter);
+    }
+
 
     private void showPermissionDialog() {
         new AlertDialog.Builder(this)
