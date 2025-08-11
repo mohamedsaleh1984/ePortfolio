@@ -3,6 +3,7 @@ package com.zybooks.inventoryapp.helper;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -10,7 +11,7 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.io.ByteArrayOutputStream;
 
-//TODO: Add Comments
+// Helper class with common functionalities
 public class Helper {
     // Convert Bitmap to byte array
     public static byte[] getBytesFromBitmap(Bitmap bitmap) {
@@ -29,8 +30,15 @@ public class Helper {
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
     }
 
+    // Show Snackbar
     public static void SnackbarNotify(View view, String message) {
         Snackbar.make(view, message, Snackbar.LENGTH_LONG).show();
+    }
+
+
+    // Log as error and using custom tag for better reading.
+    public static void Log(String message){
+        Log.wtf("MOE",message);
     }
 
 

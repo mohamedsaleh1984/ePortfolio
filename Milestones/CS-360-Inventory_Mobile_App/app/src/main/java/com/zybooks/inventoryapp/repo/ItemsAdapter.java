@@ -80,18 +80,17 @@ public class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.InventoryVie
         return items.size();
     }
 
-    public void setFilteredList(ArrayList<Item> items) {
-        this.items = items;
-    }
-
+    // Handler for Item Delete.
     public interface OnDeleteItemButtonClickListener {
         void onItemDeleteButtonClick(int position);
     }
 
+    // Handler for Item Click
     public interface OnItemClickListener {
         void onItemClick(int position);
     }
 
+    // Parse and Link the Item data to UI elements.
     public static class InventoryViewHolder extends RecyclerView.ViewHolder {
         TextView nameTextView, quantityTextView, priceTextView, tvItemID;
         ImageView imgView;

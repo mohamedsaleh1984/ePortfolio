@@ -1,6 +1,6 @@
 package com.zybooks.inventoryapp.model;
 
-//TODO: Add Comments.
+// A representation for validation.
 public class ValidationResult {
     private boolean hasError;
     private String errorMessage;

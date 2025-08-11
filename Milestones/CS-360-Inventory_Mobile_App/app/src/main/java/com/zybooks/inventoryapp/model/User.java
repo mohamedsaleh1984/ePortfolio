@@ -1,6 +1,6 @@
 package com.zybooks.inventoryapp.model;
 
-//TODO: Add Comments.
+// A representation to User information
 public class User {
     private String id = "";
     private String emailAddress = "";
@@ -21,19 +21,15 @@ public class User {
     public String getId() {
         return id;
     }
-
     public String getEmailAddress() {
         return emailAddress;
     }
-
     public String getPassword() {
         return password;
     }
-
     public long getCreatedAt() {
         return createdAt;
     }
-
     public void setCreatedAt(long createdAt) {
         this.createdAt = createdAt;
     }

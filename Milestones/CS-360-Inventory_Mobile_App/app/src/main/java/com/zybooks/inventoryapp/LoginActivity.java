@@ -19,7 +19,6 @@ import com.zybooks.inventoryapp.utils.FirebaseHelper;
 public class LoginActivity extends AppCompatActivity {
     Button btnLogin, btnRegister;
     private EditText etEmail, etPassword;
-    private TextView tvRegister;
     private ProgressBar progressBar;
     private FirebaseAuth mAuth;
 

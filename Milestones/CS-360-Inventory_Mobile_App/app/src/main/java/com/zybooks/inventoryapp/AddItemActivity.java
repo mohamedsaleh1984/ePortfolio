@@ -20,6 +20,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
+import com.google.rpc.Help;
 import com.zybooks.inventoryapp.helper.Helper;
 import com.zybooks.inventoryapp.model.Item;
 import com.zybooks.inventoryapp.model.ValidationResult;
@@ -33,7 +34,6 @@ import java.util.UUID;
 
 public class AddItemActivity extends AppCompatActivity {
     private static final int PICK_IMAGE_REQUEST = 1;
-    private static final String TAG = "MOE";
     private ImageView imageView;
     private EditText edItemName, edItemQty, edItemPrice;
     private Button btnAddEdit, btnCancel;
@@ -51,7 +51,8 @@ public class AddItemActivity extends AppCompatActivity {
 
         // Create New Item
         if (ItemID == null || ItemID.isEmpty()) {
-            log("Create New Item...");
+
+            Helper.Log("Create New Item...");
 
             Item item = createNewItem();
 
@@ -60,24 +61,32 @@ public class AddItemActivity extends AppCompatActivity {
                     .addOnSuccessListener(documentReference -> {
 
                         Helper.ToastNotify(AddItemActivity.this, "Item saved successfully");
-                        log("Item Saved...");
+
+                        Helper.Log("Item Saved...");
+
                         finish();
-                        log("Close activity...");
+
+                        Helper.Log("Close activity...");
                     })
                     .addOnFailureListener(e -> {
                         Helper.ToastNotify(AddItemActivity.this, "Failed to save item");
-                        log("Item Not Saved");
+
+                        Helper.Log("Item Not Saved");
                     });
             finish();
         } else {
-            log("Update Existing Item ID " + ItemID);
+
+            Helper.Log("Update Existing Item ID " + ItemID);
+
             Item item = createNewItem();
             Map<String, Object> updates = new HashMap<>();
             updates.put("name", item.getName());
             updates.put("price", item.getPrice());
             updates.put("quantity", item.getQuantity());
             updates.put("imageBase64", item.getImageBase64());
-            log("Before Exec");
+
+            Helper.Log("Before Exec");
+
             db.collection("items").document(ItemID)
                     .set(updates, SetOptions.merge()).addOnSuccessListener(success -> {
                         Helper.ToastNotify(AddItemActivity.this, "Item saved successfully");
@@ -86,13 +95,17 @@ public class AddItemActivity extends AppCompatActivity {
                         Helper.ToastNotify(AddItemActivity.this, "Failed to save item");
                         finish();
                     });
-            log("After Exec");
+
+            Helper.Log("After Exec");
             finish();
         }
     }
 
+    // Read Element
     private void readItem() {
-        log("readItem =>>" + ItemID);
+
+        Helper.Log("readItem =>>" + ItemID);
+
         DocumentReference docRef = db.collection("items").document(ItemID);
         docRef.get()
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -118,14 +131,14 @@ public class AddItemActivity extends AppCompatActivity {
                             }
 
                         } else {
-                            Log.d(TAG, "No such document");
-                        }
+                            Helper.Log("No such document");                        }
                     }
                 })
                 .addOnFailureListener(new com.google.android.gms.tasks.OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Log.e(TAG, "Error getting document", e);
+
+                        Helper.Log("Error getting document");
                     }
                 });
     }
@@ -138,7 +151,7 @@ public class AddItemActivity extends AppCompatActivity {
 
         if (ItemID == null || ItemID.isEmpty()) {
             ItemID = UUID.randomUUID().toString();
-            log("Set Item ID => " + ItemID);
+            Helper.Log("Set Item ID => " + ItemID);
         }
 
         String base64 = "";
@@ -152,13 +165,9 @@ public class AddItemActivity extends AppCompatActivity {
         }
 
         Item itemToReturn = new Item(ItemID, name, qty, price, base64);
-        log("Item Created " + itemToReturn);
+        Helper.Log("Item Created " + itemToReturn);
 
         return itemToReturn;
-    }
-
-    private void log(String message) {
-        Log.wtf(TAG, message);
     }
 
     @Override
@@ -256,17 +265,17 @@ public class AddItemActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         ItemID = intent.getStringExtra("InventoryActivity.ItemID");
-        log("Passed ItemID from InventoryActivity is " + ItemID);
-
+        Helper.Log("Passed ItemID from InventoryActivity is " + ItemID);
         if (ItemID != null && !ItemID.isEmpty()) {
             try {
                 readItem();
             } catch (Exception ex) {
-                Log.w("EXC", "Failed to cast.");
+                Helper.Log("Failed to cast.");
             }
         }
     }
 
+    // Bind UI elements with UI Classes.
     private void initViews() {
         // bind item details from UI
         imageView = findViewById(R.id.imgViewItem);

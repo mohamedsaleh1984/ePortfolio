@@ -18,7 +18,6 @@ import com.zybooks.inventoryapp.utils.FirebaseHelper;
 
 public class RegisterActivity extends AppCompatActivity {
     private EditText edEmailAddress, edPwd1, edPwd2;
-
     private Button btnRegister, btnCancel;
     private ProgressBar progressBar;
     private FirebaseAuth mAuth;
@@ -34,10 +33,11 @@ public class RegisterActivity extends AppCompatActivity {
         mAuth = FirebaseHelper.getInstance().getAuth();
         db = FirebaseHelper.getInstance().getFirestore();
 
-
+        // Register action click handler
         btnRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // validate users input
                 ValidationResult validationResult = validateRegister();
                 if (validationResult.hasError()) {
                     //Helper.ToastNotify(RegisterActivity.this, validationResult.getErrorMessage());
@@ -48,7 +48,7 @@ public class RegisterActivity extends AppCompatActivity {
             }
         });
 
-
+        // Return action click handler
         btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -58,6 +58,7 @@ public class RegisterActivity extends AppCompatActivity {
         });
     }
 
+    // Perform Register action.
     private void RegisterUser(View view) {
         progressBar.setVisibility(View.VISIBLE);
         btnRegister.setEnabled(false);
@@ -65,8 +66,11 @@ public class RegisterActivity extends AppCompatActivity {
         String email = edEmailAddress.getText().toString().trim();
         String password = edPwd1.getText().toString().trim();
 
+        // Create new User
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(task -> {
+
+                    // pre-auth check.
                     if (task.isSuccessful()) {
                         String userId = mAuth.getCurrentUser().getUid();
                         User user = new User(userId, email, password);
@@ -82,7 +86,6 @@ public class RegisterActivity extends AppCompatActivity {
                                         startActivity(new Intent(RegisterActivity.this, InventoryActivity.class));
                                         finish();
                                     } else {
-
                                         Helper.SnackbarNotify(view, "Failed to save user data");
                                     }
                                 });
@@ -94,7 +97,7 @@ public class RegisterActivity extends AppCompatActivity {
                 });
     }
 
-
+    // Bind The UI elements with controls.
     void initViews() {
         edEmailAddress = findViewById(R.id.edEmailAddress);
         edPwd1 = findViewById(R.id.edPwd);
@@ -104,11 +107,11 @@ public class RegisterActivity extends AppCompatActivity {
         progressBar = findViewById(R.id.progressBar);
     }
 
-    // TODO: Use Trim for Strings
+    // Validate user inputs
     ValidationResult validateRegister() {
         ValidationResult vr = new ValidationResult(false, "");
 
-        if (edEmailAddress.getText().toString().isEmpty()) {
+        if (edEmailAddress.getText().toString().trim().isEmpty()) {
             vr.setHasError(true);
             vr.setErrorMessage("Email Address can't be empty");
             return vr;
