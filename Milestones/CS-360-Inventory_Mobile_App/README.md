@@ -1,32 +1,43 @@
 # Inventory Mobile App
 
-# Firebase Auth
+#### It's a simple Android application to manage inventory. The earlier version for the app was depedning on MySQL database, which not realistic nor practical. Though, form practice prespective it was enough to maniupver around UI elements, Workflow, Database Interactions, Permissions..ect.
 
-![Firebase Auth](./screenshots/firebase-auth.png)
+#### The current version is an enhanced version, where Firebase Auth was added and real-time Firebase storgae incoperated to better and scalable soltiuon. The transition from old MySQL database to Firebase wasn't a straight forward. I conducted multiple refactoring for the project to encoperate Firebase Auth, Storage.
 
-# Firebae Storage-database
+## Firebase Auth
 
-![Firebase Storage](./screenshots/firebase-database.png)
+![Firebase Auth Image](./screenshots/firebase-auth.png)
 
-#### User Registeration
+## Firebae Storage-database
 
-![User Registeration](./screenshots/)
+![Firebase Storage Image](./screenshots/firebase-database.png)
 
-#### Login
+## User Registeration
+
+![User Registeration Image](./screenshots/register-user.png)
+
+## Login
+
+![User Login Image](./screenshots/login-user.png)
 
 ### Add/Update Item
 
-### View Items
+![Update Item](./screenshots/update-item.png)
 
-Showing items on Pixel 8
+## View Items
+
+### Showing items on Pixel 8
+
 ![View Item](./screenshots/items-pixel-8.png)
-Live update on Pixel 9 to simulate real-time update on two different devices.
-![View Item](./screenshots/items-pixel-9.png.png)
 
-### Edit Item
+### Live update on Pixel 9 to simulate real-time update on two different devices.
+
+![View Item](./screenshots/items-pixel-9.png)
+
+## Edit Item
 
 ![Edit Item](./screenshots/Edit.png)
 
-### Delete Item
+## Delete Item
 
 ![Delete Item](./screenshots/delete-item.png)
