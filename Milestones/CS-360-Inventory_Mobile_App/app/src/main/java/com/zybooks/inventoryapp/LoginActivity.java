@@ -21,8 +21,6 @@ public class LoginActivity extends AppCompatActivity {
     private EditText etEmail, etPassword;
     private ProgressBar progressBar;
     private FirebaseAuth mAuth;
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,6 +36,7 @@ public class LoginActivity extends AppCompatActivity {
 
         initViews();
 
+        // Login Click Handler.
         btnLogin.setOnClickListener(v -> {
 
             ValidationResult valid = IsValidToLogin();
