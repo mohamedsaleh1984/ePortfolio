@@ -4,7 +4,7 @@ import androidx.annotation.NonNull;
 
 // a Representation for Item Details
 public class Item {
-    private String id = "";
+    private String id;
     private String name = "";
     private int quantity = 0;
     private float price = 0.0f;
@@ -18,6 +18,8 @@ public class Item {
         this.imageBase64 = imageBase64;
         this.createdAt = System.currentTimeMillis();
     }
+    // Required for serialization.
+    public Item(){}
 
     // Getters
     public String getImageBase64() {
