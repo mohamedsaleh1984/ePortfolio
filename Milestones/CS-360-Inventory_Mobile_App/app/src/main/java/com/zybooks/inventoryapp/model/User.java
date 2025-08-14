@@ -14,9 +14,6 @@ public class User {
         this.createdAt = System.currentTimeMillis();
     }
 
-    public User() {
-    }
-
     // Getters
     public String getId() {
         return id;

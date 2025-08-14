@@ -52,11 +52,15 @@ public class Item {
     public void setCreatedAt(long createdAt) {
         this.createdAt = createdAt;
     }
+
+    // Override the original implementation
     @NonNull
     @Override
     public String toString() {
         return "Item [id=" + this.id + ", name=" + name + ", price=" + price + ", qty=" + quantity +"]";
     }
+
+
     public String toStringWithImage() {
         return "Item [id=" + this.id + ", name=" + name + ", price=" + price + ", qty=" + quantity + " , image64=" + imageBase64 + "]";
     }

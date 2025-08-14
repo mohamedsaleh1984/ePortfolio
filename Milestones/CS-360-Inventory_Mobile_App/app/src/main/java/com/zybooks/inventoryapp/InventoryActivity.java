@@ -27,6 +27,7 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.rpc.Help;
 import com.zybooks.inventoryapp.helper.Helper;
 import com.zybooks.inventoryapp.model.Item;
 import com.zybooks.inventoryapp.repo.ItemsAdapter;
@@ -39,6 +40,7 @@ public class InventoryActivity extends AppCompatActivity
         implements
         ItemsAdapter.OnDeleteItemButtonClickListener,
         ItemsAdapter.OnItemClickListener {
+
     private static final int SMS_PERMISSION_REQUEST_CODE = 100;
     private ArrayList<Item> itemList;
     private SearchView searchView;
@@ -46,7 +48,7 @@ public class InventoryActivity extends AppCompatActivity
     private RecyclerView recyclerView;
     private FirebaseFirestore db;
     private FloatingActionButton btnSendSms, btnAddItem;
-    private final String TAG = "MOE";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,6 +79,7 @@ public class InventoryActivity extends AppCompatActivity
             }
         });
 
+        // Add Item Click Handler
         btnAddItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -86,6 +89,7 @@ public class InventoryActivity extends AppCompatActivity
             }
         });
 
+        // Send SMS Click Handler
         btnSendSms.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -96,6 +100,9 @@ public class InventoryActivity extends AppCompatActivity
         loadItems();
     }
 
+    /*
+    * Load Items
+    * */
     void loadItems() {
         db.collection("items")
                 .orderBy("createdAt", Query.Direction.DESCENDING)
@@ -126,13 +133,13 @@ public class InventoryActivity extends AppCompatActivity
 
     private void filterList(String text) {
         if(text.isEmpty()){
-            Log.wtf(TAG,"RELOAD....all Items");
+            Helper.Log("RELOAD....all Items");
             //Load all elements
             loadItems();
             return;
         }
 
-        Log.wtf(TAG,"Search..."+ text);
+        Helper.Log("Search..."+ text);
 
         db.collection("items").whereEqualTo("name",text).get().addOnCompleteListener(task ->{
             if (task.isSuccessful()) {
@@ -144,16 +151,17 @@ public class InventoryActivity extends AppCompatActivity
                     }
                 }
                 if(!itemList.isEmpty()){
-                    Log.wtf(TAG,"Total items  "+ itemList.size());
+                    Helper.Log("Total items  "+ itemList.size());
                     // Update your UI with the search results
                     updateItemList(itemList);
                 }
 
             } else {
-                Log.wtf(TAG, "Error getting documents.", task.getException());
+                Helper.Log("Error getting documents."+ task.getException());
             }
         });
     }
+
 
     private void updateItemList(ArrayList<Item> items) {
         itemList.clear();
@@ -163,6 +171,9 @@ public class InventoryActivity extends AppCompatActivity
     }
 
 
+    /*
+    * Show Permission Dialog
+    * */
     private void showPermissionDialog() {
         new AlertDialog.Builder(this)
                 .setTitle("SMS Permission Needed")
@@ -185,6 +196,9 @@ public class InventoryActivity extends AppCompatActivity
                 .show();
     }
 
+    /*
+    * Check Permission and show Permission Dialog
+    * */
     private void checkAndRequestSmsPermission() {
         int selfPermission = ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS);
         if (selfPermission != PackageManager.PERMISSION_GRANTED) {
@@ -195,6 +209,9 @@ public class InventoryActivity extends AppCompatActivity
         }
     }
 
+    /*
+    * Check Permission and Ask User for it.
+    * */
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -215,6 +232,9 @@ public class InventoryActivity extends AppCompatActivity
         }
     }
 
+    /*
+    * Handle Send SMS
+    * */
     private void sendSms() {
         String phoneNumber = "929-262-8798";
         String message = "Item# IPhone13 Qty is zero";
@@ -228,14 +248,17 @@ public class InventoryActivity extends AppCompatActivity
         startActivity(smsIntent);
     }
 
+    /**
+    *  Handle Item Click
+    */
     @Override
     public void onItemClick(int position) {
         Item item = itemList.get(position);
-        Log.wtf(TAG, item.toString());
+        Helper.Log(item.toString());
 
         Intent intent = new Intent(InventoryActivity.this, AddItemActivity.class);
         intent.putExtra("InventoryActivity.ItemID", item.getId());
-        Log.wtf(TAG, item.toString());
+        Helper.Log(item.toString());
         startActivity(intent);
     }
 

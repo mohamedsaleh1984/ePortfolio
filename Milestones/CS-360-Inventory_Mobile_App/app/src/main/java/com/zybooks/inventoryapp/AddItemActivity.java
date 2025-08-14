@@ -32,6 +32,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+///
+/// Add/Edit Item Activity
+///
 public class AddItemActivity extends AppCompatActivity {
     private static final int PICK_IMAGE_REQUEST = 1;
     private ImageView imageView;
@@ -40,8 +43,65 @@ public class AddItemActivity extends AppCompatActivity {
     private String ItemID = "";
     private FirebaseFirestore db;
 
+    /**
+     * Initial call in activity lifecycle.
+     */
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_add_item);
+
+        // Bind UI Views to UI objects
+        initViews();
+
+        // reference to FireStore
+        db = FirebaseHelper.getInstance().getFirestore();
+
+        // Handle Confirm
+        btnAddEdit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                createUpdateItem();
+            }
+        });
+
+        // Return to previous
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // place holder
+                ItemID = "";
+                finish();
+            }
+        });
+
+        // Handle Image Selection
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                selectImage();
+            }
+        });
+
+        // Check Item was selected from the previous activity.
+        Intent intent = getIntent();
+        ItemID = intent.getStringExtra("InventoryActivity.ItemID");
+        Helper.Log("Passed ItemID from InventoryActivity is " + ItemID);
+        if (ItemID != null && !ItemID.isEmpty()) {
+            try {
+                readItem();
+            } catch (Exception ex) {
+                Helper.Log("Failed to cast.");
+            }
+        }
+    }
+
+    /**
+     *  Create
+     */
     private void createUpdateItem() {
 
+        // Validate User's input.
         ValidationResult validation_result = validatesSaveItem();
 
         if (validation_result.hasError()) {
@@ -223,6 +283,9 @@ public class AddItemActivity extends AppCompatActivity {
         return validationResult;
     }
 
+    /**
+     * Show UI Dialog to Pick the image from the galary.
+     */
     private void selectImage() {
         Intent intent = new Intent();
         intent.setType("image/*");
@@ -230,50 +293,8 @@ public class AddItemActivity extends AppCompatActivity {
         startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_item);
 
-        initViews();
 
-        db = FirebaseHelper.getInstance().getFirestore();
-
-        btnAddEdit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                createUpdateItem();
-
-            }
-        });
-
-        btnCancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // place holder
-                ItemID = "";
-                finish();
-            }
-        });
-
-        imageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                selectImage();
-            }
-        });
-
-        Intent intent = getIntent();
-        ItemID = intent.getStringExtra("InventoryActivity.ItemID");
-        Helper.Log("Passed ItemID from InventoryActivity is " + ItemID);
-        if (ItemID != null && !ItemID.isEmpty()) {
-            try {
-                readItem();
-            } catch (Exception ex) {
-                Helper.Log("Failed to cast.");
-            }
-        }
-    }
 
     // Bind UI elements with UI Classes.
     private void initViews() {
