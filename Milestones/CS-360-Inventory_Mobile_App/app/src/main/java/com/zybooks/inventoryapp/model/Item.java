@@ -2,8 +2,6 @@ package com.zybooks.inventoryapp.model;
 
 import androidx.annotation.NonNull;
 
-import java.util.UUID;
-
 // a Representation for Item Details
 public class Item {
     private String id = "";
@@ -12,8 +10,6 @@ public class Item {
     private float price = 0.0f;
     private String imageBase64;
     private long createdAt;
-    public Item() {
-    }
     public Item(String id, String name, int quantity, float price, String imageBase64) {
         this.id = id;
         this.name = name;
@@ -39,18 +35,9 @@ public class Item {
     public float getPrice() {
         return price;
     }
-    public long getCreatedAt() {
-        return createdAt;
-    }
     // Setters
-    public void setImage(String imageBase64) {
-        this.imageBase64 = imageBase64;
-    }
     public void setId(String id) {
         this.id = id;
-    }
-    public void setCreatedAt(long createdAt) {
-        this.createdAt = createdAt;
     }
 
     // Override the original implementation
@@ -59,7 +46,6 @@ public class Item {
     public String toString() {
         return "Item [id=" + this.id + ", name=" + name + ", price=" + price + ", qty=" + quantity +"]";
     }
-
 
     public String toStringWithImage() {
         return "Item [id=" + this.id + ", name=" + name + ", price=" + price + ", qty=" + quantity + " , image64=" + imageBase64 + "]";

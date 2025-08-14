@@ -1,12 +1,12 @@
 package com.zybooks.inventoryapp;
 
+import static android.util.Base64.*;
+
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -14,13 +14,9 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
-import com.google.rpc.Help;
 import com.zybooks.inventoryapp.helper.Helper;
 import com.zybooks.inventoryapp.model.Item;
 import com.zybooks.inventoryapp.model.ValidationResult;
@@ -58,30 +54,19 @@ public class AddItemActivity extends AppCompatActivity {
         db = FirebaseHelper.getInstance().getFirestore();
 
         // Handle Confirm
-        btnAddEdit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                createUpdateItem();
-            }
+        btnAddEdit.setOnClickListener(v -> {
+            createUpdateItem();
         });
 
         // Return to previous
-        btnCancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // place holder
-                ItemID = "";
-                finish();
-            }
+        btnCancel.setOnClickListener(v -> {
+            // place holder
+            ItemID = "";
+            finish();
         });
 
         // Handle Image Selection
-        imageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                selectImage();
-            }
-        });
+        imageView.setOnClickListener(v -> selectImage());
 
         // Check Item was selected from the previous activity.
         Intent intent = getIntent();
@@ -168,31 +153,28 @@ public class AddItemActivity extends AppCompatActivity {
 
         DocumentReference docRef = db.collection("items").document(ItemID);
         docRef.get()
-                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                    @Override
-                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        if (documentSnapshot.exists()) {
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
 
-                            // log(documentSnapshot.toString());
+                        // log(documentSnapshot.toString());
 
-                            String name = documentSnapshot.getString("name");
-                            float price = documentSnapshot.get("price", Float.class);
-                            int quantity = documentSnapshot.get("quantity", Integer.class);
-                            String image64 = documentSnapshot.getString("imageBase64");
+                        String name = documentSnapshot.getString("name");
+                        float price = documentSnapshot.get("price", Float.class);
+                        int quantity = documentSnapshot.get("quantity", Integer.class);
+                        String image64 = documentSnapshot.getString("imageBase64");
 
-                            edItemName.setText(name);
-                            edItemPrice.setText(price + "");
-                            edItemQty.setText(quantity + "");
+                        edItemName.setText(name);
+                        edItemPrice.setText(price + "");
+                        edItemQty.setText(quantity + "");
 
-                            if (image64 != null && image64.length() > 0) {
-                                byte[] byteArray = android.util.Base64.decode(image64, android.util.Base64.DEFAULT);
-                                Bitmap bmp = Helper.getBitmapFromBytes(byteArray);
-                                imageView.setImageBitmap(Bitmap.createScaledBitmap(bmp, bmp.getWidth(), bmp.getHeight(), false));
-                            }
+                        if (image64 != null && image64.length() > 0) {
+                            byte[] byteArray = decode(image64, DEFAULT);
+                            Bitmap bmp = Helper.getBitmapFromBytes(byteArray);
+                            imageView.setImageBitmap(Bitmap.createScaledBitmap(bmp, bmp.getWidth(), bmp.getHeight(), false));
+                        }
 
-                        } else {
-                            Helper.Log("No such document");                        }
-                    }
+                    } else {
+                        Helper.Log("No such document");                        }
                 })
                 .addOnFailureListener(new com.google.android.gms.tasks.OnFailureListener() {
                     @Override
