@@ -1,3 +1,13 @@
+# Original Artifcats
+
+[Inventory Mobile App](./CS-360-Inventory_Mobile_App.zip)
+[Pet Shelter](./CS-340-Pet-Shelter-WebApp.zip)
+
+# New Artifacts
+
+[Inventory Mobile App](./CS-360-Inventory_Mobile_App-NEW.zip.zip)
+[Pet Shelter](./CS-340-Pet-Shelter-WebApp-NEW.zip.zip)
+
 # Pet Shelter
 
 #### Import CSV file to Database
